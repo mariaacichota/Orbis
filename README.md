@@ -5,10 +5,16 @@ Orbis é um sistema de Gestão de Eventos desenvolvido com Java e React. É uma 
 Período de 06/02 até 06/03
 
 Ana Galvão
+
 Ariel Alves (Arquiteto)
+
 Eduardo Abrahão
+
 Eduardo Kolberg
+
 Maria Cichota (Team Lead)
+
 Raquel Braga (Tester)
+
 Wendel Lopes
 
