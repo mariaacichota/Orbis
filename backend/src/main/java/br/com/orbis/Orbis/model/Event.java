@@ -36,6 +36,13 @@ public class Event {
 
     private String imageUrl;
 
+    @NotNull(message = "Max tickets is required")
+    @Positive(message = "Max tickets must be greater than zero")
+    private Integer maxTickets;
+
+    @NotNull(message = "Organizer is required")
+    private Long organizerId;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -62,5 +69,11 @@ public class Event {
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public Integer getMaxTickets() { return maxTickets; }
+    public void setMaxTickets(Integer maxTickets) { this.maxTickets = maxTickets; }
+
+    public Long getOrganizerId() { return organizerId; }
+    public void setOrganizerId(Long organizerId) { this.organizerId = organizerId; }
 }
 
