@@ -94,8 +94,8 @@ public class UserTest {
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertFalse(violations.isEmpty());
-        assertEquals("Sua senha precisa conter pelo menos 8 caracteres, sendo pelo menos um deles maiúsculo," +
-                        " um número e um caracter especial.",
+        assertEquals("Your password must be at least 8 characters long, contain one uppercase letter, " +
+                        "one number, and one special character",
                 violations.iterator().next().getMessage());
     }
 
