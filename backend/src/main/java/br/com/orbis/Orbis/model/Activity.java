@@ -1,7 +1,7 @@
 package br.com.orbis.Orbis.model;
 
 import jakarta.persistence.*;
-
+import jakarta.validation.constraints.NotBlank;
 @Entity
 public class Activity {
 
@@ -9,7 +9,9 @@ public class Activity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "activity name required.")
     private String name;
+    @NotBlank(message = "activity description required.")
     private String description;
 
     public Long getId() { return id; }

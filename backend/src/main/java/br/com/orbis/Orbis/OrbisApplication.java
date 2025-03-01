@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class OrbisApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(OrbisApplication.class, args);
 	}
 
