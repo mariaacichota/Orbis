@@ -1,6 +1,5 @@
-package br.com.orbis.Orbis.model;
+package br.com.orbis.Orbis.controller;
 
-import br.com.orbis.Orbis.controller.EventController;
 import br.com.orbis.Orbis.model.Event;
 import br.com.orbis.Orbis.service.EventService;
 
@@ -20,7 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class EventControllerTest {
 

@@ -1,8 +1,7 @@
-package br.com.orbis.Orbis.model;
+package br.com.orbis.Orbis.service;
 
 import br.com.orbis.Orbis.model.Event;
 import br.com.orbis.Orbis.repository.EventRepository;
-import br.com.orbis.Orbis.service.EventService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,14 +9,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 

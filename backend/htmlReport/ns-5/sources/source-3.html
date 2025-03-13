@@ -1,0 +1,177 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UserService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.orbis.Orbis.service</a>
+</div>
+
+<h1>Coverage Summary for Class: UserService (br.com.orbis.Orbis.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (17/17)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.orbis.Orbis.service;
+&nbsp;
+&nbsp;import br.com.orbis.Orbis.exception.UserValidationException;
+&nbsp;import br.com.orbis.Orbis.model.User;
+&nbsp;import br.com.orbis.Orbis.repository.UserRepository;
+&nbsp;import jakarta.transaction.Transactional;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class UserService {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserRepository userRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private EncryptionService encryptionService;
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public User createUser(User user) {
+&nbsp;
+<b class="fc">&nbsp;        if (userRepository.existsByEmail(user.getEmail())) {</b>
+<b class="fc">&nbsp;            throw new UserValidationException(&quot;O e-mail &#39;&quot; + user.getEmail() + &quot;&#39; já está em uso.&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        user.setPassword(encryptionService.encryptPassword(user.getPassword()));</b>
+<b class="fc">&nbsp;        return userRepository.save(user);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;User&gt; getAllUsers() {
+<b class="fc">&nbsp;        return userRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Optional&lt;User&gt; getUserById(Long id) {
+<b class="fc">&nbsp;        return userRepository.findById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public User updateUser(Long id, User updatedUser) {
+<b class="fc">&nbsp;        if (userRepository.existsById(id)) {</b>
+<b class="fc">&nbsp;            updatedUser.setId(id);</b>
+<b class="fc">&nbsp;            updatedUser.setPassword(encryptionService.encryptPassword(updatedUser.getPassword()));</b>
+<b class="fc">&nbsp;            return userRepository.save(updatedUser);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean deleteUser(Long id) {
+<b class="fc">&nbsp;        if (userRepository.existsById(id)) {</b>
+<b class="fc">&nbsp;            userRepository.deleteById(id);</b>
+<b class="fc">&nbsp;            return true;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public User getUserByEmail(String email) {
+<b class="fc">&nbsp;        return userRepository.findByEmail(email);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-03-13 20:23</div>
+</div>
+</body>
+</html>

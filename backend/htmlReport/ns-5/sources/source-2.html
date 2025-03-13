@@ -1,0 +1,199 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > EventService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.orbis.Orbis.service</a>
+</div>
+
+<h1>Coverage Summary for Class: EventService (br.com.orbis.Orbis.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EventService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (12/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    88,9%
+  </span>
+  <span class="absValue">
+    (32/36)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.orbis.Orbis.service;
+&nbsp;
+&nbsp;import br.com.orbis.Orbis.model.Event;
+&nbsp;import br.com.orbis.Orbis.repository.EventRepository;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;import java.io.IOException;
+&nbsp;import java.nio.file.Files;
+&nbsp;import java.nio.file.Paths;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@Service
+&nbsp;public class EventService {
+&nbsp;
+&nbsp;    private final EventRepository repository;
+<b class="fc">&nbsp;    private final String UPLOAD_DIR = &quot;uploads/&quot;;</b>
+&nbsp;
+<b class="fc">&nbsp;    public EventService(EventRepository repository) {</b>
+<b class="fc">&nbsp;        this.repository = repository;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Event createEvent(Event event, MultipartFile image) throws IOException {
+<b class="pc">&nbsp;        if (image != null &amp;&amp; !image.isEmpty()) {</b>
+<b class="fc">&nbsp;            String imagePath = UPLOAD_DIR + image.getOriginalFilename();</b>
+<b class="fc">&nbsp;            Files.copy(image.getInputStream(), Paths.get(imagePath));</b>
+<b class="nc">&nbsp;            event.setImageUrl(imagePath);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return repository.save(event);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;Event&gt; listEvents() {
+<b class="fc">&nbsp;        return repository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;Event&gt; listEventsByOrganizer(Long organizerId) {
+<b class="fc">&nbsp;        return repository.findByOrganizerId(organizerId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Event updateEvent(Long eventId, Event event, MultipartFile image, Long currentOrganizerId) throws IOException {
+<b class="fc">&nbsp;        Optional&lt;Event&gt; existingEvent = repository.findById(eventId);</b>
+<b class="fc">&nbsp;        if (existingEvent.isEmpty()) {</b>
+<b class="fc">&nbsp;            throw new IllegalArgumentException(&quot;Event not found&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        Event eventToUpdate = existingEvent.get();</b>
+&nbsp;
+<b class="fc">&nbsp;        if (!eventToUpdate.getOrganizerId().equals(currentOrganizerId)) {</b>
+<b class="fc">&nbsp;            throw new IllegalArgumentException(&quot;Only the event organizer can update this event&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        eventToUpdate.setTitle(event.getTitle());</b>
+<b class="fc">&nbsp;        eventToUpdate.setDescription(event.getDescription());</b>
+<b class="fc">&nbsp;        eventToUpdate.setDate(event.getDate());</b>
+<b class="fc">&nbsp;        eventToUpdate.setTime(event.getTime());</b>
+<b class="fc">&nbsp;        eventToUpdate.setLocation(event.getLocation());</b>
+<b class="fc">&nbsp;        eventToUpdate.setSpeakers(event.getSpeakers());</b>
+<b class="fc">&nbsp;        eventToUpdate.setActivities(event.getActivities());</b>
+<b class="fc">&nbsp;        eventToUpdate.setMaxTickets(event.getMaxTickets());</b>
+&nbsp;
+<b class="pc">&nbsp;        if (image != null &amp;&amp; !image.isEmpty()) {</b>
+<b class="nc">&nbsp;            String imagePath = UPLOAD_DIR + image.getOriginalFilename();</b>
+<b class="nc">&nbsp;            Files.copy(image.getInputStream(), Paths.get(imagePath));</b>
+<b class="nc">&nbsp;            eventToUpdate.setImageUrl(imagePath);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return repository.save(eventToUpdate);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void deleteEvent(Long eventId, Long organizerId) {
+<b class="fc">&nbsp;        Optional&lt;Event&gt; existingEvent = repository.findById(eventId);</b>
+<b class="fc">&nbsp;        if (existingEvent.isEmpty()) {</b>
+<b class="fc">&nbsp;            throw new IllegalArgumentException(&quot;Event not found&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        Event eventToDelete = existingEvent.get();</b>
+&nbsp;
+<b class="fc">&nbsp;        if (!eventToDelete.getOrganizerId().equals(organizerId)) {</b>
+<b class="fc">&nbsp;            throw new IllegalArgumentException(&quot;Only the event organizer can delete this event&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        repository.delete(eventToDelete);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-03-13 20:23</div>
+</div>
+</body>
+</html>
