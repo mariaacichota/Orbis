@@ -13,11 +13,14 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private EncryptionService encryptionService;
+    private final EncryptionService encryptionService;
+
+    public UserService(UserRepository userRepository, EncryptionService encryptionService) {
+        this.userRepository = userRepository;
+        this.encryptionService = encryptionService;
+    }
 
     @Transactional
     public User createUser(User user) {
