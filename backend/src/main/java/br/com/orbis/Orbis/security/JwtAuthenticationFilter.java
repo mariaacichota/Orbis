@@ -1,4 +1,4 @@
-package br.com.orbis.Orbis.configuration;
+package br.com.orbis.Orbis.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

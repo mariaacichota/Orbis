@@ -169,4 +169,36 @@ public class UserServiceTest {
         assertNull(updated);
         verify(userRepository, never()).save(any(User.class));
     }
+
+    @Test
+    void testWeakPasswordCreateUser() {
+        User user = new User();
+        user.setName("User Tester");
+        user.setEmail("tester@email.com");
+        user.setPassword("abc123");
+        user.setRole(Role.PARTICIPANTE);
+
+        UserValidationException exception = assertThrows(UserValidationException.class, () -> {
+            userService.createUser(user);
+        });
+
+        assertEquals("Sua senha precisa conter pelo menos 8 caracteres, sendo pelo menos um deles maiúsculo, " +
+                "um número e um caracter especial.", exception.getMessage());
+    }
+
+    @Test
+    void testWeakPasswordUpdateUser() {
+        User user = new User();
+        user.setName("User Tester");
+        user.setEmail("tester@email.com");
+        user.setPassword("abc123");
+        user.setRole(Role.PARTICIPANTE);
+
+        UserValidationException exception = assertThrows(UserValidationException.class, () -> {
+            userService.createUser(user);
+        });
+
+        assertEquals("Sua senha precisa conter pelo menos 8 caracteres, sendo pelo menos um deles maiúsculo, " +
+                "um número e um caracter especial.", exception.getMessage());
+    }
 }
