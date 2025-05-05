@@ -4,7 +4,6 @@ import br.com.orbis.Orbis.exception.UserValidationException;
 import br.com.orbis.Orbis.model.User;
 import br.com.orbis.Orbis.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,17 +12,23 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private EncryptionService encryptionService;
+    private final EncryptionService encryptionService;
+
+    public UserService(UserRepository userRepository, EncryptionService encryptionService) {
+        this.userRepository = userRepository;
+        this.encryptionService = encryptionService;
+    }
 
     @Transactional
     public User createUser(User user) {
 
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new UserValidationException("O e-mail '" + user.getEmail() + "' já está em uso.");
+        } else if (!isValidPassword(user.getPassword())){
+            throw new UserValidationException(
+                    "Sua senha precisa conter pelo menos 8 caracteres, sendo pelo menos um deles maiúsculo, um número e um caracter especial.");
         }
 
         user.setPassword(encryptionService.encryptPassword(user.getPassword()));
@@ -57,5 +62,10 @@ public class UserService {
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    private boolean isValidPassword(String password) {
+        String regex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+        return password != null && password.matches(regex);
     }
 }

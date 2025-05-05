@@ -26,10 +26,6 @@ public class User {
     private String email;
 
     @NotBlank(message = "Password cannot be blank")
-    @Pattern(
-            regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-            message = "Sua senha precisa conter pelo menos 8 caracteres, sendo pelo menos um deles maiúsculo, um número e um caracter especial."
-    )
     private String password;
 
     @Enumerated(EnumType.STRING)

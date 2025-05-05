@@ -81,33 +81,4 @@ public class UserTest {
         assertFalse(violations.isEmpty());
         assertEquals("Password cannot be blank", violations.iterator().next().getMessage());
     }
-
-    @Test
-    void testWeakPassword() {
-        User user = new User();
-        user.setName("User Tester");
-        user.setEmail("tester@email.com");
-        // A senha deve seguir um padrão de mínimo 8 caracteres, pelo menos uma letra
-        // maiúscula, pelo menos um número e pelo menos um caracter especial.
-        user.setPassword("abc123");
-        user.setRole(Role.PARTICIPANTE);
-
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertFalse(violations.isEmpty());
-        assertEquals("Sua senha precisa conter pelo menos 8 caracteres, sendo pelo menos um deles maiúsculo, " +
-                        "um número e um caracter especial.",
-                violations.iterator().next().getMessage());
-    }
-
-    @Test
-    void testStrongPassword() {
-        User user = new User();
-        user.setName("User Tester");
-        user.setEmail("tester@email.com");
-        user.setPassword("strongPassword*123");
-        user.setRole(Role.PARTICIPANTE);
-
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertTrue(violations.isEmpty()); // Nenhum erro esperado
-    }
 }

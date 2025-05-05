@@ -41,28 +41,6 @@ public class UserControllerTest {
     }
 
     @Test
-    void testCreateUser_Success() {
-        when(userService.createUser(any(User.class))).thenReturn(user);
-
-        ResponseEntity<Object> response = userController.createUser(user);
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertNotNull(response.getBody(), "A resposta deve conter um usuário.");
-        assertEquals("User Tester", ((User) response.getBody()).getName());
-    }
-
-
-    @Test
-    void testCreateUser_Error() {
-        when(userService.createUser(any(User.class))).thenThrow(new RuntimeException("Erro ao criar usuário"));
-
-        ResponseEntity<Object> response = userController.createUser(user);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Erro ao criar usuário", response.getBody());
-    }
-
-    @Test
     void testGetUserById_Found() {
         when(userService.getUserById(1L)).thenReturn(Optional.of(user));
 
