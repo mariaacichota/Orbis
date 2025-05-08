@@ -38,19 +38,27 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<?> listEvents() {
+    public ResponseEntity<List<Event>> listEvents() {
         List<Event> events = service.listEvents();
         return ResponseEntity.ok(events);
     }
 
     @GetMapping("/organizer/{organizerId}")
-    public ResponseEntity<?> listEventsByOrganizer(@PathVariable Long organizerId) {
+    public ResponseEntity<List<Event>> listEventsByOrganizer(@PathVariable Long organizerId) {
         List<Event> events = service.listEventsByOrganizer(organizerId);
         return ResponseEntity.ok(events);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<Event>> searchEvents(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String tag) {
+        List<Event> events = service.searchByCategoryAndTag(category, tag);
+        return ResponseEntity.ok(events);
+    }
+
     @PutMapping("/{eventId}")
-    public ResponseEntity<?> updateEvent(
+    public ResponseEntity<Event> updateEvent(
             @PathVariable Long eventId,
             @Valid @RequestPart("event") Event event,
             @RequestPart("image") MultipartFile image,
@@ -68,7 +76,7 @@ public class EventController {
     }
 
     @DeleteMapping("/{eventId}")
-    public ResponseEntity<?> deleteEvent(
+    public ResponseEntity<Void> deleteEvent(
             @PathVariable Long eventId,
             @RequestHeader("Authorization") Long organizerId) {
         try {
@@ -80,5 +88,4 @@ public class EventController {
             return ResponseEntity.status(403).build();
         }
     }
-
 }

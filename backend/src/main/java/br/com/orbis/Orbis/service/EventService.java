@@ -37,6 +37,10 @@ public class EventService {
         return repository.findByOrganizerId(organizerId);
     }
 
+    public List<Event> searchByCategoryAndTag(String category, String tag) {
+        return repository.findByCategoryAndTag(category, tag);
+    }
+
     public Event updateEvent(Long eventId, Event event, MultipartFile image, Long currentOrganizerId) throws IOException {
         Optional<Event> existingEvent = repository.findById(eventId);
         if (existingEvent.isEmpty()) {
