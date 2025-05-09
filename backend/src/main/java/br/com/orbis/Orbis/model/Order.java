@@ -31,22 +31,52 @@ public class Order {
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemOrder> items = new ArrayList<>();
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
     public void setUser(User user) {
+        this.user = user;
     }
 
-    public void setItems(List<ItemOrder> itens) {
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setTotalAmount(BigDecimal total) {
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public void setStatus(OrderStatus orderStatus) {
+    public OrderStatus getStatus() {
+        return status;
     }
 
-    public boolean getStatus() {
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 
-    public Iterable<Object> getItems() {
-        return null;
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
     }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public List<ItemOrder> getItems() {
+        return items;
+    }
+
+    public void setItems(List<ItemOrder> items) {
+        this.items = items;
+    }
+
 }

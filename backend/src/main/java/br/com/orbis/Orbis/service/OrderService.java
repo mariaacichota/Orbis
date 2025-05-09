@@ -1,74 +1,81 @@
 package br.com.orbis.Orbis.service;
 
+import br.com.orbis.Orbis.exception.BusinessException;
+import br.com.orbis.Orbis.exception.ResourceNotFoundException;
 import br.com.orbis.Orbis.model.*;
 import br.com.orbis.Orbis.repository.OrderRepository;
 import br.com.orbis.Orbis.repository.TicketRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@Transactional
 public class OrderService {
-    private final OrderRepository orderRepo;
-    private final TicketRepository ticketRepo;
+    private final OrderRepository orderRepository;
+    private final TicketRepository ticketRepository;
 
-    public OrderService(OrderRepository orderRepo, TicketRepository ticketRepo) {
-        this.orderRepo = orderRepo;
-        this.ticketRepo = ticketRepo;
+    public OrderService(OrderRepository orderRepository, TicketRepository ticketRepository) {
+        this.orderRepository = orderRepository;
+        this.ticketRepository = ticketRepository;
     }
 
-    @Transactional
-    public Order generateOrder(User user, List<ItemOrder> itens) {
-        Order pedido = new Order();
-        pedido.setUser(user);
+    public Order createOrder(User user, List<ItemOrder> items) {
+        Order order = new Order();
+        order.setUser(user);
 
         BigDecimal total = BigDecimal.ZERO;
-        for (ItemOrder item : itens) {
-            // valida disponibilidade
-            Ticket ticket = ticketRepo.findById(item.getTicket().getId())
-                    .orElseThrow(() -> new RuntimeException("Ticket não encontrado"));
-            if (ticket.getAvailableQuantity() < item.getQuantity()) {
-                throw new RuntimeException("Ingressos insuficientes para o tipo “" +
-                        ticket.getTicketType().getDescriptionType() + "”");
-            }
-            // decrementa estoque
-            ticket.setAvailableQuantity((int) (ticket.getAvailableQuantity() - item.getQuantity()));
-            ticketRepo.save(ticket);
 
-            // ajusta preço e vincula item
+        for (ItemOrder item : items) {
+            Ticket ticket = ticketRepository.findById(item.getTicket().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Ticket não encontrado: " + item.getTicket().getId()));
+
+            if (ticket.getAvailableQuantity() < item.getQuantity()) {
+                throw new BusinessException("Ingressos insuficientes para o tipo: "
+                        + ticket.getTicketType().getDescriptionType());
+            }
+
+            ticket.setAvailableQuantity(ticket.getAvailableQuantity() - item.getQuantity());
+            ticketRepository.save(ticket);
+
+            item.setOrder(order);
             item.setPrice(ticket.getPrice());
-            item.setOrder(pedido);
-            total = total.add(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+
+            total = total.add(ticket.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
         }
 
-        pedido.setItems(itens);
-        pedido.setTotalAmount(total);
-        // status fica PENDENTE por padrão
-        return orderRepo.save(pedido);
+        order.setItems(items);
+        order.setTotalAmount(total);
+        return orderRepository.save(order);
     }
 
-    @Transactional
-    public Order confirmOrder(Long pedidoId) {
-        Order pedido = orderRepo.findById(pedidoId)
-                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
-        pedido.setStatus(OrderStatus.CONFIRMADO);
-        return pedido;
+    public Order getByIdOrThrow(Long id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado: " + id));
     }
 
-    @Transactional
-    public Order cancelOrder(Long pedidoId) {
-        //TODO
-        return null;
+    public Order confirmOrder(Long id) {
+        Order order = getByIdOrThrow(id);
+        order.setStatus(OrderStatus.CONFIRMADO);
+        return order;
     }
 
-    public List<Order> listByUser(User user) {
-        return orderRepo.findByUser(user);
+    public Order cancelOrder(Long id) {
+        Order order = getByIdOrThrow(id);
+        if (order.getStatus() == OrderStatus.CONFIRMADO) {
+            order.getItems().forEach(item -> {
+                Ticket t = item.getTicket();
+                t.setAvailableQuantity(t.getAvailableQuantity() + item.getQuantity());
+                ticketRepository.save(t);
+            });
+        }
+        order.setStatus(OrderStatus.CANCELADO);
+        return order;
     }
 
-    public Optional<Order> searchById(Long id) {
-        return orderRepo.findById(id);
+    @Transactional(readOnly = true)
+    public List<Order> findByUserId(Long userId) {
+        return orderRepository.findByUserId(userId);
     }
 }

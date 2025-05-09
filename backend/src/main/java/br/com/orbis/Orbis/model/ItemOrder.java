@@ -28,18 +28,44 @@ public class ItemOrder {
     @Column(precision = 12, scale = 2, nullable = false)
     private BigDecimal price;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
     public Ticket getTicket() {
+        return ticket;
     }
 
-    public double getQuantity() {
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
     }
 
-    public void setPrice(BigDecimal price) {
+    public Integer getQuantity() {
+        return quantity;
     }
 
-    public void setOrder(Order pedido) {
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
     public BigDecimal getPrice() {
+        return price;
     }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
 }

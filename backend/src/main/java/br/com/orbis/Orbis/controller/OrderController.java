@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/orders")
 public class OrderController {
+
     private final OrderService orderService;
 
     public OrderController(OrderService orderService) {
@@ -20,31 +21,31 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> generateOrder(@Valid @RequestBody List<ItemOrder> itens,
+    public ResponseEntity<Order> createOrder(@Valid @RequestBody List<ItemOrder> items,
                                              @RequestAttribute("loggedUser") User user) {
-        Order pedido = orderService.generateOrder(user, itens);
-        return ResponseEntity.ok(pedido);
+        Order order = orderService.createOrder(user, items);
+        return ResponseEntity.ok(order);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getPedido(@PathVariable Long id) {
-        return orderService.searchById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Order> getOrder(@PathVariable Long id) {
+        Order order = orderService.getByIdOrThrow(id);
+        return ResponseEntity.ok(order);
     }
 
-    @GetMapping("/meus")
-    public ResponseEntity<List<Order>> myOrders(@RequestAttribute("loggedUser") User user) {
-        return ResponseEntity.ok(orderService.listByUser(user));
+    @GetMapping("/my")
+    public ResponseEntity<List<Order>> getMyOrders(@RequestAttribute("loggedUser") User user) {
+        List<Order> list = orderService.findByUserId(user.getId());
+        return ResponseEntity.ok(list);
     }
 
-    @PostMapping("/{id}/confirmar")
-    public ResponseEntity<Order> confirm(@PathVariable Long id) {
+    @PostMapping("/{id}/confirm")
+    public ResponseEntity<Order> confirmOrder(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.confirmOrder(id));
     }
 
-    @PostMapping("/{id}/cancelar")
-    public ResponseEntity<Order> cancel(@PathVariable Long id) {
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<Order> cancelOrder(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.cancelOrder(id));
     }
 }
