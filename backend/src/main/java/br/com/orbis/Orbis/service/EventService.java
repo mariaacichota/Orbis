@@ -60,6 +60,7 @@ public class EventService {
         eventToUpdate.setSpeakers(event.getSpeakers());
         eventToUpdate.setActivities(event.getActivities());
         eventToUpdate.setMaxTickets(event.getMaxTickets());
+        eventToUpdate.setBaseTicketPrice(event.getBaseTicketPrice());
 
         if (image != null && !image.isEmpty()) {
             String imagePath = UPLOAD_DIR + image.getOriginalFilename();

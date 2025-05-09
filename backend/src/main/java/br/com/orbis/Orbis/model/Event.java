@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -42,6 +43,17 @@ public class Event {
 
     @NotNull(message = "Organizer is required")
     private Long organizerId;
+
+    @NotNull(message = "Base price is required")
+    @Positive(message = "Base price must be greater than zero")
+    private Double baseTicketPrice;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ticket> tickets = new ArrayList<>();
+
+    public boolean hasCapacity() {
+        return tickets.size() < maxTickets;
+    }
 
     @ManyToMany
     @JoinTable(
@@ -97,4 +109,15 @@ public class Event {
 
     public List<Tag> getTags() { return tags; }
     public void setTags(List<Tag> tags) { this.tags = tags; }
+
+    public Double getBaseTicketPrice() {
+        return baseTicketPrice;
+    }
+    public void setBaseTicketPrice(Double baseTicketPrice) {
+        this.baseTicketPrice = baseTicketPrice;
+    }
+
+    public List<Ticket> getTickets() {
+        return tickets;
+    }
 }
