@@ -1,5 +1,6 @@
 package br.com.orbis.Orbis.controller;
 
+import br.com.orbis.Orbis.exception.UserValidationException;
 import br.com.orbis.Orbis.security.JwtTokenProvider;
 import br.com.orbis.Orbis.model.User;
 import br.com.orbis.Orbis.service.UserService;
@@ -65,7 +66,18 @@ public class AuthController {
     @PostMapping("/sign-in")
     public ResponseEntity<?> signIn(@Valid @RequestBody User user) {
         String rawPassword = user.getPassword();
-        User newUser = userService.createUser(user);
+
+        try{
+            User newUser = userService.createUser(user);
+        }catch (UserValidationException ex) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", ex.getMessage());
+            return ResponseEntity.status(400).body(errorResponse);
+        } catch (Exception ex) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Erro inesperado: " + ex.getMessage());
+            return ResponseEntity.status(500).body(errorResponse);
+        }
 
         try {
             Authentication authentication = authenticationManager.authenticate(
