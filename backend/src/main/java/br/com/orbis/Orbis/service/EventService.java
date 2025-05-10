@@ -1,9 +1,14 @@
 package br.com.orbis.Orbis.service;
 
+import br.com.orbis.Orbis.dto.EventDTO;
 import br.com.orbis.Orbis.model.Event;
+import br.com.orbis.Orbis.model.Role;
+import br.com.orbis.Orbis.model.User;
 import br.com.orbis.Orbis.repository.EventRepository;
+import br.com.orbis.Orbis.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -14,18 +19,41 @@ import java.util.Optional;
 public class EventService {
 
     private final EventRepository repository;
+
+    private final UserRepository userRepository;
+
     private final String UPLOAD_DIR = "uploads/";
 
-    public EventService(EventRepository repository) {
-        this.repository = repository;
+    public EventService(EventRepository repository, UserService userService, UserRepository userRepository) { this.repository = repository;
+        this.userRepository = userRepository;
     }
 
-    public Event createEvent(Event event, MultipartFile image) throws IOException {
+    public Event createEvent(EventDTO eventDto, MultipartFile image, User user) throws IOException {
+
+        // Verifique se o usuário tem a role de ORGANIZADOR
+        if (user.getRole() != Role.ORGANIZADOR) {
+            throw new IllegalArgumentException("Usuario não é organizador.");
+        }
+
         if (image != null && !image.isEmpty()) {
             String imagePath = UPLOAD_DIR + image.getOriginalFilename();
             Files.copy(image.getInputStream(), Paths.get(imagePath));
-            event.setImageUrl(imagePath);
+            eventDto.setImageUrl(imagePath);
         }
+
+        Event event = new Event();
+        event.setTitle(eventDto.getTitle());
+        event.setDescription(eventDto.getDescription());
+        event.setDate(eventDto.getDate());
+        event.setTime(eventDto.getTime());
+        event.setLocation(eventDto.getLocation());
+        //event.setSpeakers(eventDto.getSpeakers());
+        //event.setActivities(eventDto.getActivities());
+        event.setMaxTickets(eventDto.getMaxTickets());
+        event.setOrganizer(user);  // Define o organizador
+        //event.setCategories(eventDto.getCategories()); // Associa categorias
+        //event.setTags(eventDto.getTags()); // Associa tags
+
         return repository.save(event);
     }
 
@@ -37,29 +65,34 @@ public class EventService {
         return repository.findByOrganizerId(organizerId);
     }
 
+    public Optional<Event> getEventById(Long eventId) { return repository.findById(eventId); }
+
     public List<Event> searchByCategoryAndTag(String category, String tag) {
         return repository.findByCategoryAndTag(category, tag);
     }
 
-    public Event updateEvent(Long eventId, Event event, MultipartFile image, Long currentOrganizerId) throws IOException {
+
+    public Event updateEvent(Long eventId, EventDTO eventDto, MultipartFile image, Long currentOrganizerId) throws IOException {
         Optional<Event> existingEvent = repository.findById(eventId);
         if (existingEvent.isEmpty()) {
             throw new IllegalArgumentException("Event not found");
         }
         Event eventToUpdate = existingEvent.get();
 
-        if (!eventToUpdate.getOrganizerId().equals(currentOrganizerId)) {
+        if (!eventToUpdate.getOrganizer().getId().equals(currentOrganizerId)) {
             throw new IllegalArgumentException("Only the event organizer can update this event");
         }
 
-        eventToUpdate.setTitle(event.getTitle());
-        eventToUpdate.setDescription(event.getDescription());
-        eventToUpdate.setDate(event.getDate());
-        eventToUpdate.setTime(event.getTime());
-        eventToUpdate.setLocation(event.getLocation());
-        eventToUpdate.setSpeakers(event.getSpeakers());
-        eventToUpdate.setActivities(event.getActivities());
-        eventToUpdate.setMaxTickets(event.getMaxTickets());
+        eventToUpdate.setTitle(eventDto.getTitle());
+        eventToUpdate.setDescription(eventDto.getDescription());
+        eventToUpdate.setDate(eventDto.getDate());
+        eventToUpdate.setTime(eventDto.getTime());
+        eventToUpdate.setLocation(eventDto.getLocation());
+        //eventToUpdate.setSpeakers(eventDto.getSpeakers());
+        //eventToUpdate.setActivities(eventDto.getActivities());
+        eventToUpdate.setMaxTickets(eventDto.getMaxTickets());
+        //eventToUpdate.setCategories(eventDto.getCategories()); // Atualiza categorias
+        //eventToUpdate.setTags(eventDto.getTags()); // Atualiza tags
 
         if (image != null && !image.isEmpty()) {
             String imagePath = UPLOAD_DIR + image.getOriginalFilename();
@@ -77,11 +110,51 @@ public class EventService {
         }
         Event eventToDelete = existingEvent.get();
 
-        if (!eventToDelete.getOrganizerId().equals(organizerId)) {
+        if (eventToDelete.getOrganizer() == null || !eventToDelete.getOrganizer().getId().equals(organizerId)) {
             throw new IllegalArgumentException("Only the event organizer can delete this event");
         }
 
         repository.delete(eventToDelete);
     }
-}
 
+    public void addParticipant(Long eventId, Long userId) {
+        // Verificar se o evento existe
+        Optional<Event> existingEvent = repository.findById(eventId);
+        if (existingEvent.isEmpty()) {
+            throw new IllegalArgumentException("Event not found");
+        }
+
+        Event event = existingEvent.get();
+
+        // Verificar se o usuário existe
+        Optional<User> existingUser = userRepository.getUserById(userId);
+        if (existingUser.isEmpty()) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        User user = existingUser.get();
+
+        // Verificar se o usuário tem a role de PARTICIPANTE
+        if (user.getRole() != Role.PARTICIPANTE) {
+            throw new IllegalArgumentException("User does not have the PARTICIPANTE role");
+        }
+
+        // Verificar se o evento já atingiu o limite de participantes
+        if (event.getParticipants().size() >= event.getMaxTickets()) {
+            throw new IllegalArgumentException("Event has reached the maximum number of participants");
+        }
+
+        // Adicionar o usuário à lista de participantes do evento
+        event.getParticipants().add(user);
+
+        // Adicionar o evento à lista de eventos do usuário (se necessário)
+        user.getParticipatingEvents().add(event);
+
+        // Salvar o evento com o novo participante
+        repository.save(event);
+
+        // Atualizar o usuário com o novo evento (se necessário)
+        userRepository.save(user);
+    }
+
+}
