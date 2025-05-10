@@ -1,5 +1,6 @@
 package br.com.orbis.Orbis.controller;
 
+import br.com.orbis.Orbis.exception.UserValidationException;
 import br.com.orbis.Orbis.security.JwtTokenProvider;
 import br.com.orbis.Orbis.model.User;
 import br.com.orbis.Orbis.service.UserService;
@@ -36,8 +37,8 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
+    @PostMapping("/sign-in")
+    public ResponseEntity<?> signIn(@RequestBody Map<String, String> loginData) {
         String email = loginData.get("email");
         String rawPassword = loginData.get("password");
 
@@ -45,11 +46,9 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, rawPassword));
 
-            String token = jwtTokenProvider.generateToken(authentication);
-
             Map<String, String> response = new HashMap<>();
-            response.put("token", token);
-            return ResponseEntity.ok("Bearer " + response);
+            response.put("token", "Bearer " + jwtTokenProvider.generateToken(authentication));
+            return ResponseEntity.ok(response);
 
         } catch (BadCredentialsException ex) {
             Map<String, String> errorResponse = new HashMap<>();
@@ -62,31 +61,30 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@Valid @RequestBody User user) {
+    @PostMapping("/sign-up")
+    public ResponseEntity<?> signUp(@Valid @RequestBody User user) {
         String rawPassword = user.getPassword();
-        User newUser = userService.createUser(user);
 
         try {
+            userService.createUser(user);
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getEmail(), rawPassword));
-            String token = jwtTokenProvider.generateToken(authentication);
 
             Map<String, String> response = new HashMap<>();
-            response.put("token", token);
-            return ResponseEntity.ok("Bearer " + response);
+            response.put("token", "Bearer " + jwtTokenProvider.generateToken(authentication));
+            return ResponseEntity.ok(response);
         } catch (BadCredentialsException ex) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("message", "Usuário ou senha inválidos.");
             return ResponseEntity.status(401).body(errorResponse);
+        } catch (UserValidationException ex) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", ex.getMessage());
+            return ResponseEntity.status(400).body(errorResponse);
         } catch (Exception ex) {
-
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("message", "Erro inesperado: " + ex.getMessage());
             return ResponseEntity.status(500).body(errorResponse);
-    }
-
-
-
+        }
     }
 }
