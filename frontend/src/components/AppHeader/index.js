@@ -1,16 +1,24 @@
-import { BellFilled, MailOutlined } from "@ant-design/icons";
-import { Badge, Drawer, Image, List, Space, Typography } from "antd";
-import { useEffect, useState } from "react";
+import {
+    BellFilled,
+    MailOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
+} from "@ant-design/icons";
+import { Badge, Typography, Button } from "antd";
 
-
-function AppHeader(){
-
-    return(
-        <div className="AppHeader">        
-
-        <Typography.Title className="title">Orbi - Gestão de Eventos</Typography.Title>
-        
-        </div>        
+function AppHeader({ collapsed, onToggleSidebar }) {
+    return (
+        <div className="AppHeader" style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <Button
+                type="text"
+                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                onClick={onToggleSidebar}
+                style={{ fontSize: "18px" }}
+            />
+            <Typography.Title level={3} className="title" style={{ margin: 0 }}>
+                Orbi - Gestão de Eventos
+            </Typography.Title>
+        </div>
     );
 }
 

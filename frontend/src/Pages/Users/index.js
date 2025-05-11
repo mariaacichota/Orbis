@@ -29,7 +29,6 @@ const Login = () => {
 
   return (
     <>
-      <h2 className="texto">Login</h2>
       <AppUserLogin onLogin={handleLogin} />
     </>
   );
