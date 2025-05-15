@@ -1,12 +1,17 @@
 package br.com.orbis.Orbis.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import lombok.Data;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Data
 public class Event {
 
     @Id
@@ -40,8 +45,19 @@ public class Event {
     @Positive(message = "Max tickets must be greater than zero")
     private Integer maxTickets;
 
-    @NotNull(message = "Organizer is required")
-    private Long organizerId;
+
+    @ManyToOne
+    @JoinColumn(name = "organizer_id", nullable = false)
+    @JsonBackReference
+    private User organizer;
+
+    @ManyToMany
+    @JoinTable(
+            name = "event_participants",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> participants = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -59,42 +75,4 @@ public class Event {
     )
     private List<Tag> tags;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public LocalDate getDate() { return date; }
-    public void setDate(LocalDate date) { this.date = date; }
-
-    public LocalTime getTime() { return time; }
-    public void setTime(LocalTime time) { this.time = time; }
-
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-
-    public List<Speaker> getSpeakers() { return speakers; }
-    public void setSpeakers(List<Speaker> speakers) { this.speakers = speakers; }
-
-    public List<Activity> getActivities() { return activities; }
-    public void setActivities(List<Activity> activities) { this.activities = activities; }
-
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
-
-    public Integer getMaxTickets() { return maxTickets; }
-    public void setMaxTickets(Integer maxTickets) { this.maxTickets = maxTickets; }
-
-    public Long getOrganizerId() { return organizerId; }
-    public void setOrganizerId(Long organizerId) { this.organizerId = organizerId; }
-
-    public List<Category> getCategories() { return categories; }
-    public void setCategories(List<Category> categories) { this.categories = categories; }
-
-    public List<Tag> getTags() { return tags; }
-    public void setTags(List<Tag> tags) { this.tags = tags; }
 }

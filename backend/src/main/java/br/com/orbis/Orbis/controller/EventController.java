@@ -1,7 +1,11 @@
 package br.com.orbis.Orbis.controller;
 
+import br.com.orbis.Orbis.dto.EventDTO;
 import br.com.orbis.Orbis.model.Event;
+import br.com.orbis.Orbis.model.Role;
+import br.com.orbis.Orbis.model.User;
 import br.com.orbis.Orbis.service.EventService;
+import br.com.orbis.Orbis.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,77 +19,121 @@ import java.util.List;
 public class EventController {
 
     private final EventService service;
+    private final UserService userService;
 
-    public EventController(EventService service) {
+    public EventController(EventService service, UserService userService) {
         this.service = service;
+        this.userService = userService;
     }
 
     @PostMapping(consumes = {"multipart/form-data", "application/json"})
     public ResponseEntity<Event> createEvent(
-            @Valid @RequestPart(value = "event", required = false) Event event,
+            @Valid @RequestPart(value = "event", required = false) EventDTO event,
             @RequestPart(value = "image", required = false) MultipartFile image,
-            @RequestBody(required = false) Event eventBody) {
+            @RequestBody(required = false) EventDTO eventBody) {
+
         try {
-            Event eventToCreate = event != null ? event : eventBody;
-            if (eventToCreate == null) {
-                return ResponseEntity.badRequest().body(null);
-            }
-            Event createdEvent = service.createEvent(eventToCreate, image);
+
+            EventDTO eventToCreate = event != null ? event : eventBody;
+            User user = userService.getUserById(eventToCreate.getOrganizerId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+
+            Event createdEvent = service.createEvent(eventToCreate, image, user);
             return ResponseEntity.ok(createdEvent);
         } catch (IOException e) {
+            return ResponseEntity.status(500).body(null);
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
         }
     }
 
     @GetMapping
     public ResponseEntity<List<Event>> listEvents() {
-        List<Event> events = service.listEvents();
-        return ResponseEntity.ok(events);
+        return ResponseEntity.ok(service.listEvents());
     }
 
     @GetMapping("/organizer/{organizerId}")
     public ResponseEntity<List<Event>> listEventsByOrganizer(@PathVariable Long organizerId) {
-        List<Event> events = service.listEventsByOrganizer(organizerId);
-        return ResponseEntity.ok(events);
+        return ResponseEntity.ok(service.listEventsByOrganizer(organizerId));
     }
 
     @GetMapping("/search")
     public ResponseEntity<List<Event>> searchEvents(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String tag) {
-        List<Event> events = service.searchByCategoryAndTag(category, tag);
-        return ResponseEntity.ok(events);
+        return ResponseEntity.ok(service.searchByCategoryAndTag(category, tag));
     }
 
-    @PutMapping("/{eventId}")
+    @PutMapping(value = "/{eventId}", consumes = {"multipart/form-data", "application/json"})
     public ResponseEntity<Event> updateEvent(
             @PathVariable Long eventId,
-            @Valid @RequestPart("event") Event event,
-            @RequestPart("image") MultipartFile image,
-            @RequestHeader("Authorization") Long organizerId) {
+            @Valid @RequestPart(value = "event", required = false) EventDTO event,
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestBody(required = false) EventDTO eventBody) {
+
         try {
-            Event updatedEvent = service.updateEvent(eventId, event, image, organizerId);
+            EventDTO eventToUpdate = event != null ? event : eventBody;
+
+            // Verifica se o organizerId está no corpo da requisição
+            User user = userService.getUserById(eventToUpdate.getOrganizerId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+            Event updatedEvent = service.updateEvent(eventId, eventToUpdate, image, user.getId());
             return ResponseEntity.ok(updatedEvent);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        } catch (SecurityException e) {
-            return ResponseEntity.status(403).body(null);
+            return ResponseEntity.badRequest().build();
         } catch (IOException e) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.status(500).body(null);
         }
     }
 
     @DeleteMapping("/{eventId}")
     public ResponseEntity<Void> deleteEvent(
             @PathVariable Long eventId,
-            @RequestHeader("Authorization") Long organizerId) {
+            @RequestBody(required = false) EventDTO eventBody) {
+
         try {
-            service.deleteEvent(eventId, organizerId);
+            // Verifica se o organizerId está no corpo da requisição
+            if (eventBody == null || eventBody.getOrganizerId() == null) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            User user = userService.getUserById(eventBody.getOrganizerId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+            service.deleteEvent(eventId, user.getId());
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
-        } catch (SecurityException e) {
-            return ResponseEntity.status(403).build();
+        }
+    }
+
+    @GetMapping("/{eventId}")
+    public ResponseEntity<Event> getEventById(@PathVariable Long eventId) {
+        return service.getEventById(eventId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/{eventId}/participants")
+    public ResponseEntity<String> addParticipant(@PathVariable Long eventId, @RequestBody User user) {
+        try {
+
+            // Verifica se o evento existe
+            Event event = service.getEventById(eventId).orElseThrow(() -> new IllegalArgumentException("Event not found"));
+
+            // Verifica se o evento atingiu o limite de participantes
+            if (event.getParticipants().size() >= event.getMaxTickets()) {
+                return ResponseEntity.status(400).body("Event has reached the maximum number of participants.");
+            }
+
+            // Adiciona o participante ao evento
+            service.addParticipant(eventId, user.getId());
+
+            return ResponseEntity.ok("User added as a participant.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }
