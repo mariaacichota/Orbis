@@ -6,7 +6,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = (formData) => {
-    fetch("http://localhost:8080/api/auth/login", {
+    fetch("http://localhost:8080/api/auth/sign-in", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData)

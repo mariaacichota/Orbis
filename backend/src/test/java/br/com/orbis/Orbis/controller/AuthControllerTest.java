@@ -38,7 +38,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void testLoginSuccess() {
+    void testSignInSuccess() {
         Map<String, String> loginData = new HashMap<>();
         loginData.put("email", "user@example.com");
         loginData.put("password", "password");
@@ -47,7 +47,7 @@ class AuthControllerTest {
                 .thenReturn(null);
         when(jwtTokenProvider.generateToken(any())).thenReturn("Bearer dummyToken");
 
-        ResponseEntity<?> response = authController.login(loginData);
+        ResponseEntity<?> response = authController.signIn(loginData);
 
         assertNotNull(response);
         assertEquals(200, response.getStatusCodeValue());
@@ -55,7 +55,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void testLoginFailureInvalidCredentials() {
+    void testSignInFailureInvalidCredentials() {
         Map<String, String> loginData = new HashMap<>();
         loginData.put("email", "user@example.com");
         loginData.put("password", "wrongPassword");
@@ -63,7 +63,7 @@ class AuthControllerTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(new BadCredentialsException("Usuário inexistente ou senha inválida."));
 
-        ResponseEntity<?> response = authController.login(loginData);
+        ResponseEntity<?> response = authController.signIn(loginData);
 
         assertNotNull(response);
         assertEquals(401, response.getStatusCodeValue());
@@ -71,7 +71,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void testSignInSuccess() {
+    void testSignUpSuccess() {
         Map<String, String> signUpData = new HashMap<>();
         signUpData.put("email", "newuser@example.com");
         signUpData.put("password", "password");
@@ -81,7 +81,7 @@ class AuthControllerTest {
                 .thenReturn(null);
         when(jwtTokenProvider.generateToken(any())).thenReturn("Bearer dummyToken");
 
-        ResponseEntity<?> response = authController.signIn(new User());
+        ResponseEntity<?> response = authController.signUp(new User());
 
         assertNotNull(response);
         assertEquals(200, response.getStatusCodeValue());
@@ -89,20 +89,15 @@ class AuthControllerTest {
     }
 
     @Test
-    void testSignInFailure() {
-        Map<String, String> signUpData = new HashMap<>();
-        signUpData.put("email", "newuser@example.com");
-        signUpData.put("password", "password");
-
+    void testSignUpFailure() {
         when(userService.createUser(any())).thenThrow(new RuntimeException("Erro inesperado"));
 
+        ResponseEntity<?> response = authController.signUp(new User());
 
+        assertEquals(500, response.getStatusCodeValue());
 
-        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
-            ResponseEntity<?> response = authController.signIn(new User());;
-        });
-
-        // Verificando se a mensagem da exceção é a esperada
-        assertEquals("Erro inesperado", thrown.getMessage());
+        Map<String, String> body = (Map<String, String>) response.getBody();
+        assertNotNull(body);
+        assertEquals("Erro inesperado: Erro inesperado", body.get("message"));
     }
 }
