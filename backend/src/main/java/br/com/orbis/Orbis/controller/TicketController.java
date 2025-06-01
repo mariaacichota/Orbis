@@ -1,67 +1,38 @@
 package br.com.orbis.Orbis.controller;
 
-import br.com.orbis.Orbis.model.Ticket;
+import br.com.orbis.Orbis.model.TicketType;
 import br.com.orbis.Orbis.service.TicketService;
-import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/tickets")
+@RequestMapping("/events/{eventId}/tickets")
 public class TicketController {
 
-    private final TicketService service;
+    private static final Logger log = LoggerFactory.getLogger(TicketController.class);
 
-    public TicketController(TicketService service) {
-        this.service = service;
-    }
+    @Autowired
+    private TicketService ticketService;
 
-    @PostMapping("/event/{eventId}/type/{ticketTypeId}")
-    public ResponseEntity<Ticket> createTicket(
+    @PostMapping
+    public ResponseEntity<String> sellTicket(
             @PathVariable Long eventId,
-            @PathVariable Long ticketTypeId,
-            @Valid @RequestBody Ticket ticket) {
+            @RequestParam Long userId,
+            @RequestParam TicketType type) {
+        log.info("[POST] /events/{}/tickets - Vendendo ingresso. eventId={}, userId={}, type={}", eventId, userId, type);
         try {
-            Ticket createdTicket = service.createTicket(eventId, ticketTypeId, ticket);
-            return ResponseEntity.ok(createdTicket);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Ticket>> listTickets() {
-        List<Ticket> tickets = service.listTickets();
-        return ResponseEntity.ok(tickets);
-    }
-
-    @GetMapping("/event/{eventId}")
-    public ResponseEntity<List<Ticket>> listTicketsByEvent(@PathVariable Long eventId) {
-        List<Ticket> tickets = service.listTicketsByEvent(eventId);
-        return ResponseEntity.ok(tickets);
-    }
-
-    @PutMapping("/{ticketId}")
-    public ResponseEntity<Ticket> updateTicket(
-            @PathVariable Long ticketId,
-            @Valid @RequestBody Ticket ticket) {
-        try {
-            Ticket updatedTicket = service.updateTicket(ticketId, ticket);
-            return ResponseEntity.ok(updatedTicket);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @DeleteMapping("/{ticketId}")
-    public ResponseEntity<Void> deleteTicket(@PathVariable Long ticketId) {
-        try {
-            service.deleteTicket(ticketId);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+            ticketService.processTicketSale(eventId, userId, type);
+            log.info("Ingresso vendido com sucesso para o evento {} e usuário {}.", eventId, userId);
+            return ResponseEntity.ok("Ingresso vendido com sucesso!");
+        } catch (IllegalStateException e) {
+            log.warn("Falha ao vender ingresso: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Falha: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("Erro inesperado ao vender ingresso", e);
+            return ResponseEntity.internalServerError().body("Erro inesperado: " + e.getMessage());
         }
     }
 }

@@ -53,6 +53,7 @@ public class EventService {
         event.setOrganizer(user);  // Define o organizador
         //event.setCategories(eventDto.getCategories()); // Associa categorias
         //event.setTags(eventDto.getTags()); // Associa tags
+        event.setBaseTicketPrice(eventDto.getBaseTicketPrice());
 
         return repository.save(event);
     }
@@ -93,6 +94,7 @@ public class EventService {
         eventToUpdate.setMaxTickets(eventDto.getMaxTickets());
         //eventToUpdate.setCategories(eventDto.getCategories()); // Atualiza categorias
         //eventToUpdate.setTags(eventDto.getTags()); // Atualiza tags
+        eventToUpdate.setBaseTicketPrice(eventDto.getBaseTicketPrice());
 
         if (image != null && !image.isEmpty()) {
             String imagePath = UPLOAD_DIR + image.getOriginalFilename();

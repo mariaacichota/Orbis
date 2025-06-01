@@ -34,4 +34,8 @@ public class EventDTO {
     @NotNull(message = "Max tickets is required")
     @Positive(message = "Max tickets must be greater than zero")
     private Integer maxTickets;
+
+    @NotNull(message = "Base price is required")
+    @Positive(message = "Base price must be greater than zero")
+    private Double baseTicketPrice;
 }
