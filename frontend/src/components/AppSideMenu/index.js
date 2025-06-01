@@ -1,6 +1,4 @@
 import {
-  AppstoreOutlined,
-  ShopOutlined,
   ShoppingCartOutlined,
   UserOutlined,
   CalendarOutlined,
@@ -9,7 +7,7 @@ import { Menu, Badge } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-function AppSideMenu() {
+function AppSideMenu({ collapsed }) {
   const location = useLocation();
   const [selectedKeys, setSelectedKeys] = useState("/");
   const [cartCount, setCartCount] = useState(0);
@@ -33,35 +31,36 @@ function AppSideMenu() {
   }, [location.pathname]);
 
   return (
-    <div className="AppSideMenu">
-      <Menu
-        className="SideMenuVertical"
-        mode="vertical"
-        onClick={(item) => navigate(item.key)}
-        selectedKeys={[selectedKeys]}
-        items={[
-          {
-            label: "Eventos",
-            key: "/",
-            icon: <CalendarOutlined />,
-          },
-          {
-            label: "Perfil",
-            key: "/perfil",
-            icon: <UserOutlined />,
-          },
-          {
-            label: "Carrinho",
-            key: "/carrinho",
-            icon: (
-              <Badge count={cartCount} size="small" offset={[0, 4]}>
-                <ShoppingCartOutlined />
-              </Badge>
-            ),
-          },
-        ]}
-      ></Menu>
-    </div>
+      <div className="AppSideMenu responsive-menu">
+        <Menu
+            className="SideMenuVertical"
+            mode="inline"
+            inlineCollapsed={collapsed}
+            onClick={(item) => navigate(item.key)}
+            selectedKeys={[selectedKeys]}
+            items={[
+              {
+                label: "Eventos",
+                key: "/",
+                icon: <CalendarOutlined />,
+              },
+              {
+                label: "Perfil",
+                key: "/perfil",
+                icon: <UserOutlined />,
+              },
+              {
+                label: "Carrinho",
+                key: "/carrinho",
+                icon: (
+                    <Badge count={cartCount} size="small" offset={[0, 4]}>
+                      <ShoppingCartOutlined />
+                    </Badge>
+                ),
+              },
+            ]}
+        />
+      </div>
   );
 }
 

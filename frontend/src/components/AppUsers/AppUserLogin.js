@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AppUserLogin = () => {
@@ -46,6 +46,7 @@ const AppUserLogin = () => {
 
   return (
     <div className="container">
+      <h2 className="texto">Login</h2>
       <form onSubmit={handleSubmit}>
         <label>Email:</label>
         <input
