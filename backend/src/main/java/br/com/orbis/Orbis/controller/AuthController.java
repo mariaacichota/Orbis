@@ -10,7 +10,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +24,8 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private static final String MESSAGE = "message";
+
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     private final AuthenticationManager authenticationManager;
@@ -33,14 +34,14 @@ public class AuthController {
 
     private final UserService userService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserService userService, PasswordEncoder passwordEncoder) {
+    public AuthController(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userService = userService;
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@RequestBody Map<String, String> loginData) {
+    public ResponseEntity<Map<String, String>> signIn(@RequestBody Map<String, String> loginData) {
         String email = loginData.get("email");
         String rawPassword = loginData.get("password");
         log.info("[POST] /api/auth/sign-in - Tentativa de login para o e-mail: {}", email);
@@ -54,18 +55,18 @@ public class AuthController {
         } catch (BadCredentialsException e) {
             log.warn("Credenciais inválidas para o e-mail: {}", email);
             Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Usuário inexistente ou senha inválida.");
+            errorResponse.put(MESSAGE, "Usuário inexistente ou senha inválida.");
             return ResponseEntity.status(401).body(errorResponse);
         } catch (Exception e) {
             log.error("Erro ao realizar login para o e-mail: {}", email, e);
             Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Erro inesperado: " + e.getMessage());
+            errorResponse.put(MESSAGE, "Erro inesperado: " + e.getMessage());
             return ResponseEntity.status(500).body(errorResponse);
         }
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@Valid @RequestBody User user) {
+    public ResponseEntity<Map<String, String>> signUp(@Valid @RequestBody User user) {
         String rawPassword = user.getPassword();
 
         try {
@@ -78,15 +79,15 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException ex) {
             Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Usuário ou senha inválidos.");
+            errorResponse.put(MESSAGE, "Usuário ou senha inválidos.");
             return ResponseEntity.status(401).body(errorResponse);
         } catch (UserValidationException ex) {
             Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", ex.getMessage());
+            errorResponse.put(MESSAGE, ex.getMessage());
             return ResponseEntity.status(400).body(errorResponse);
         } catch (Exception ex) {
             Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Erro inesperado: " + ex.getMessage());
+            errorResponse.put(MESSAGE, "Erro inesperado: " + ex.getMessage());
             return ResponseEntity.status(500).body(errorResponse);
         }
     }

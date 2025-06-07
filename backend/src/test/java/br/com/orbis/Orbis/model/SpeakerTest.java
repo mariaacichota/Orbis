@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SpeakerTest {
 
     @Test
-    void NameIsBlank_shouldFail() {
+    void NameIsBlankShouldFail() {
         Speaker speaker = new Speaker();
         speaker.setName("");
         speaker.setBio("standard biography");
@@ -16,7 +16,7 @@ class SpeakerTest {
     }
 
     @Test
-    void NameIsValid_shouldPass() {
+    void NameIsValidShouldPass() {
         Speaker speaker = new Speaker();
         speaker.setName("Solange");
         speaker.setBio("standard biography2");
@@ -25,7 +25,7 @@ class SpeakerTest {
     }
 
     @Test
-    void speakerSettersAndGetters_ShouldWork() {
+    void speakerSettersAndGettersShouldWork() {
         Speaker speaker = new Speaker();
         speaker.setId(1L);
         speaker.setName("Alicia");

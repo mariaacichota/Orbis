@@ -1,7 +1,7 @@
 package br.com.orbis.Orbis.exception;
 
 public class UserValidationException extends RuntimeException {
-    private String message;
+    private final String message;
 
     public UserValidationException(String message) {
         super(message);

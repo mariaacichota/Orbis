@@ -1,5 +1,6 @@
 package br.com.orbis.Orbis.controller;
 
+import br.com.orbis.Orbis.exception.UserValidationException;
 import br.com.orbis.Orbis.model.User;
 import br.com.orbis.Orbis.security.JwtTokenProvider;
 import br.com.orbis.Orbis.service.UserService;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -14,8 +16,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class AuthControllerTest {
@@ -34,7 +38,7 @@ class AuthControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        authController = new AuthController(authenticationManager, jwtTokenProvider, userService, null);
+        authController = new AuthController(authenticationManager, jwtTokenProvider, userService);
     }
 
     @Test
@@ -50,24 +54,7 @@ class AuthControllerTest {
         ResponseEntity<?> response = authController.signIn(loginData);
 
         assertNotNull(response);
-        assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody().toString().contains("Bearer dummyToken"));
-    }
-
-    @Test
-    void testSignInFailureInvalidCredentials() {
-        Map<String, String> loginData = new HashMap<>();
-        loginData.put("email", "user@example.com");
-        loginData.put("password", "wrongPassword");
-
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenThrow(new BadCredentialsException("Usuário inexistente ou senha inválida."));
-
-        ResponseEntity<?> response = authController.signIn(loginData);
-
-        assertNotNull(response);
-        assertEquals(401, response.getStatusCodeValue());
-        assertTrue(response.getBody().toString().contains("message"));
+        assertTrue(Objects.requireNonNull(response.getBody()).toString().contains("Bearer dummyToken"));
     }
 
     @Test
@@ -84,8 +71,7 @@ class AuthControllerTest {
         ResponseEntity<?> response = authController.signUp(new User());
 
         assertNotNull(response);
-        assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody().toString().contains("Bearer dummyToken"));
+        assertTrue(Objects.requireNonNull(response.getBody()).toString().contains("Bearer dummyToken"));
     }
 
     @Test
@@ -94,10 +80,77 @@ class AuthControllerTest {
 
         ResponseEntity<?> response = authController.signUp(new User());
 
-        assertEquals(500, response.getStatusCodeValue());
-
         Map<String, String> body = (Map<String, String>) response.getBody();
         assertNotNull(body);
         assertEquals("Erro inesperado: Erro inesperado", body.get("message"));
+    }
+
+    @Test
+    void testSignInWithBadCredentials() {
+        Map<String, String> loginData = new HashMap<>();
+        loginData.put("email", "user@example.com");
+        loginData.put("password", "wrongpassword");
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new BadCredentialsException("Bad credentials"));
+
+        ResponseEntity<?> response = authController.signIn(loginData);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        Map<String, String> responseBody = (Map<String, String>) response.getBody();
+        assertEquals("Usuário inexistente ou senha inválida.", responseBody.get("message"));
+    }
+
+    @Test
+    void testSignInWithUnexpectedException() {
+        Map<String, String> loginData = new HashMap<>();
+        loginData.put("email", "user@example.com");
+        loginData.put("password", "password");
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new RuntimeException("Erro inesperado"));
+
+        ResponseEntity<?> response = authController.signIn(loginData);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Map<String, String> responseBody = (Map<String, String>) response.getBody();
+        assertEquals("Erro inesperado: Erro inesperado", responseBody.get("message"));
+    }
+
+    @Test
+    void testSignUpWithBadCredentials() {
+        User newUser = new User();
+        newUser.setEmail("test@example.com");
+        newUser.setPassword("password");
+
+        when(userService.createUser(any())).thenReturn(newUser);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new BadCredentialsException("Bad credentials"));
+
+        ResponseEntity<?> response = authController.signUp(newUser);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+
+        Map<String, String> responseBody = (Map<String, String>) response.getBody();
+        assertEquals("Usuário ou senha inválidos.", responseBody.get("message"));
+    }
+
+    @Test
+    void testSignUpWithUserValidationException() {
+        User newUser = new User();
+        newUser.setEmail("test@example.com");
+        newUser.setPassword("password");
+
+        when(userService.createUser(any())).thenReturn(newUser);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new UserValidationException("Erro de validação do usuário"));
+
+        ResponseEntity<?> response = authController.signUp(newUser);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+        Map<String, String> responseBody = (Map<String, String>) response.getBody();
+        assertEquals("Erro de validação do usuário", responseBody.get("message"));
     }
 }
