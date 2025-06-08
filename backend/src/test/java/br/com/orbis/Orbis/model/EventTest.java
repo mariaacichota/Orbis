@@ -11,7 +11,7 @@ class EventTest{
 
 
     @Test
-    void eventWithoutTitle_ShouldFail() {
+    void eventWithoutTitleShouldFail() {
         Event event = new Event();
         event.setDescription("Convention");
         event.setDate(LocalDate.of(2025, 3, 10));
@@ -22,7 +22,7 @@ class EventTest{
     }
 
     @Test
-    void testingWithInvalidFields_ShouldFail() {
+    void testingWithInvalidFieldsShouldFail() {
         Event event = new Event();
         event.setTitle("");
         event.setDescription("");
@@ -41,14 +41,14 @@ class EventTest{
         assertNull(event.getOrganizer());
     }
     @Test
-    void maxTickets_GreaterThanZero() {
+    void maxTicketsGreaterThanZero() {
         Event event = new Event();
         event.setMaxTickets(-5);
         assertFalse(event.getMaxTickets() > 0, "Max tickets must be greater than zero");
     }
 
     @Test
-    void testingWithValidFields_ShouldPass() {
+    void testingWithValidFieldsShouldPass() {
         Event event = new Event();
         event.setTitle("ADM Lecture");
         event.setDescription("lecture about administration.");
@@ -57,7 +57,6 @@ class EventTest{
         event.setLocation("Copacabana");
         event.setMaxTickets(100);
 
-        // Criação do organizador
         User organizer = new User();
         organizer.setId(1L);
         event.setOrganizer(organizer);  // Define o organizador
@@ -72,7 +71,7 @@ class EventTest{
         assertNotNull(event.getMaxTickets());
     }
     @Test
-    void eventSettersAndGetters_ShouldWork() {
+    void eventSettersAndGettersShouldWork() {
         Event event = new Event();
         event.setId(1L);
         event.setTitle("Tech Conference");
@@ -83,8 +82,8 @@ class EventTest{
         event.setMaxTickets(500);
 
         User organizer = new User();
-        organizer.setId(2L); // Supondo que User tenha um método setId
-        event.setOrganizer(organizer);  // Alterado de setOrganizerId(2L)
+        organizer.setId(2L);
+        event.setOrganizer(organizer);
 
         assertEquals(1L, event.getId());
         assertEquals("Tech Conference", event.getTitle());

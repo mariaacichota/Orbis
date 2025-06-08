@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ActivityTest {
 
     @Test
-    void validActivity_ShouldPass() {
+    void validActivityShouldPass() {
         Activity activity = new Activity();
         activity.setName("Java lecture");
         activity.setDescription("a lecture about java");
@@ -18,7 +18,7 @@ class ActivityTest {
     }
 
     @Test
-    void invalidActivity_ShouldFail() {
+    void invalidActivityShouldFail() {
         Activity activity = new Activity();
         activity.setName(null);
         activity.setDescription(null);
@@ -27,7 +27,7 @@ class ActivityTest {
         assertNull(activity.getDescription());
     }
     @Test
-    void activitySettersAndGetters_ShouldWork() {
+    void activitySettersAndGettersShouldWork() {
         Activity activity = new Activity();
         activity.setId(1L);
         activity.setName("java workshop");

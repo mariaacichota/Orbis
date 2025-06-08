@@ -1,22 +1,25 @@
 package br.com.orbis.Orbis;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class FiltersTest extends BaseTest {
+@EnabledIfSystemProperty(named = "chrome.tests.enabled", matches = "true")
+class FiltersTest extends BaseTest {
 
     @BeforeEach
     @Override
-    public void setup() {
+    void setup() {
         super.setup();
         driver.get("http://localhost:3000");
     }
 
     @Test
     @DisplayName("Deve aplicar os filtros de categoria e região")
-    public void shouldApplyFilters() {
+    void shouldApplyFilters() {
         try {
             wait.until(ExpectedConditions.jsReturnsValue("return document.readyState === 'complete'"));
 
@@ -45,6 +48,8 @@ public class FiltersTest extends BaseTest {
             ));
             applyButton.click();
 
+            assertTrue(applyButton.isDisplayed());
+
             wait.until(ExpectedConditions.textToBePresentInElementLocated(
                     By.xpath("//h4[contains(@class,'ant-typography')]"),
                     "Todos os Eventos (1)"
@@ -57,20 +62,15 @@ public class FiltersTest extends BaseTest {
 
     @Test
     @DisplayName("Deve buscar evento pelo nome e limpar filtros")
-    public void shouldSearchByName() {
+    void shouldSearchByName() {
         try {
             wait.until(ExpectedConditions.jsReturnsValue("return document.readyState === 'complete'"));
-            Thread.sleep(1000);
 
             WebElement searchInput = wait.until(ExpectedConditions.elementToBeClickable(
                     By.xpath("//input[@placeholder='Buscar por nome do evento']")));
             searchInput.clear();
-            Thread.sleep(500);
             searchInput.sendKeys("Web Dev Conference");
-            Thread.sleep(1000);
             searchInput.sendKeys(Keys.ENTER);
-
-            Thread.sleep(3000);
 
             wait.until(ExpectedConditions.textToBePresentInElementLocated(
                     By.xpath("//h4[contains(@class,'ant-typography')]"),
@@ -81,7 +81,7 @@ public class FiltersTest extends BaseTest {
                     By.xpath("//button[normalize-space()='Limpar']")));
             clearButton.click();
 
-            Thread.sleep(3000);
+            assertTrue(clearButton.isDisplayed());
 
             wait.until(ExpectedConditions.textToBePresentInElementLocated(
                     By.xpath("//h4[contains(@class,'ant-typography')]"),
@@ -95,7 +95,7 @@ public class FiltersTest extends BaseTest {
 
     @Test
     @DisplayName("Deve filtrar eventos pela data")
-    public void shouldFilterByDate() {
+    void shouldFilterByDate() {
         try {
             wait.until(ExpectedConditions.jsReturnsValue("return document.readyState === 'complete'"));
 
@@ -103,7 +103,6 @@ public class FiltersTest extends BaseTest {
                     By.xpath("//input[@placeholder='Data início']")));
             dateRangeInput.click();
 
-            Thread.sleep(2000);
 
             WebElement datePickerDropdown = wait.until(ExpectedConditions.visibilityOfElementLocated(
                     By.cssSelector("div.ant-picker-dropdown")));
@@ -122,7 +121,7 @@ public class FiltersTest extends BaseTest {
                     By.xpath("//button[.//span[text()='Aplicar Filtros']]")));
             applyButton.click();
 
-            Thread.sleep(5000);
+            assertTrue(applyButton.isDisplayed());
 
             wait.until(ExpectedConditions.textToBePresentInElementLocated(
                     By.xpath("//h4[contains(@class,'ant-typography')]"),

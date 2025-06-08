@@ -20,6 +20,7 @@ import java.util.List;
 @RequestMapping("/events")
 public class EventController {
 
+    private static final String USER_NOT_FOUND_MESSAGE = "User not found";
     private static final Logger log = LoggerFactory.getLogger(EventController.class);
 
     private final EventService service;
@@ -40,7 +41,7 @@ public class EventController {
         try {
             EventDTO eventToCreate = event != null ? event : eventBody;
             User user = userService.getUserById(eventToCreate.getOrganizerId())
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                    .orElseThrow(() -> new IllegalArgumentException(USER_NOT_FOUND_MESSAGE));
             log.info("Organizador encontrado: {}", user.getEmail());
             Event createdEvent = service.createEvent(eventToCreate, image, user);
             log.info("Evento criado com sucesso: {}", createdEvent.getId());
@@ -83,7 +84,7 @@ public class EventController {
 
             // Verifica se o organizerId está no corpo da requisição
             User user = userService.getUserById(eventToUpdate.getOrganizerId())
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                    .orElseThrow(() -> new IllegalArgumentException(USER_NOT_FOUND_MESSAGE));
 
             Event updatedEvent = service.updateEvent(eventId, eventToUpdate, image, user.getId());
             return ResponseEntity.ok(updatedEvent);
@@ -106,7 +107,7 @@ public class EventController {
             }
 
             User user = userService.getUserById(eventBody.getOrganizerId())
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                    .orElseThrow(() -> new IllegalArgumentException(USER_NOT_FOUND_MESSAGE));
 
             service.deleteEvent(eventId, user.getId());
             return ResponseEntity.noContent().build();

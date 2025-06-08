@@ -2,8 +2,10 @@ package br.com.orbis.Orbis.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 @Entity
+@Data
 public class Ticket {
 
     @Id
@@ -29,22 +31,6 @@ public class Ticket {
         this.type = type;
         this.event = event;
         this.user = user;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public TicketType getType() {
-        return type;
-    }
-
-    public Event getEvent() {
-        return event;
-    }
-
-    public User getUser() {
-        return user;
     }
 
     public double getPrice() {

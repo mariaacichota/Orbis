@@ -38,7 +38,7 @@ public class UserController {
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Erro ao buscar usuários", e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UserControllerTest {
+class UserControllerTest {
 
     @Mock
     private UserService userService;
@@ -41,7 +41,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void testGetUserById_Found() {
+    void testGetUserByIdFound() {
         when(userService.getUserById(1L)).thenReturn(Optional.of(user));
 
         ResponseEntity<User> response = userController.getUserById(1L);
@@ -52,7 +52,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void testGetUserById_NotFound() {
+    void testGetUserByIdNotFound() {
         when(userService.getUserById(1L)).thenReturn(Optional.empty());
 
         ResponseEntity<User> response = userController.getUserById(1L);
@@ -62,7 +62,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void testGetAllUsers_EmptyList() {
+    void testGetAllUsersEmptyList() {
         when(userService.getAllUsers()).thenReturn(Collections.emptyList());
 
         ResponseEntity<List<User>> response = userController.getAllUsers();
@@ -72,7 +72,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void testGetAllUsers_Success() {
+    void testGetAllUsersSuccess() {
         List<User> userList = Collections.singletonList(user);
         when(userService.getAllUsers()).thenReturn(userList);
 
@@ -85,7 +85,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void testGetAllUsers_Exception() {
+    void testGetAllUsersException() {
         when(userService.getAllUsers()).thenThrow(new RuntimeException("Erro Interno"));
 
         ResponseEntity<List<User>> response = userController.getAllUsers();
@@ -95,7 +95,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void testDeleteUser_Success() {
+    void testDeleteUserSuccess() {
         when(userService.deleteUser(1L)).thenReturn(true);
 
         ResponseEntity<HttpStatus> response = userController.deleteUser(1L);
@@ -105,7 +105,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void testDeleteUser_NotFound() {
+    void testDeleteUserNotFound() {
         when(userService.deleteUser(1L)).thenReturn(false);
 
         ResponseEntity<HttpStatus> response = userController.deleteUser(1L);
@@ -115,7 +115,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void testGetUserByEmail_Found() {
+    void testGetUserByEmailFound() {
         when(userService.getUserByEmail("tester@email.com"))
                 .thenReturn(user);
 
@@ -127,7 +127,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void testGetUserByEmail_NotFound() {
+    void testGetUserByEmailNotFound() {
         when(userService.getUserByEmail("tester@email.com"))
                 .thenReturn(null);
 
@@ -138,7 +138,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void testUpdateUser_Found() {
+    void testUpdateUserFound() {
         when(userService.updateUser(eq(1L), any(User.class))).thenReturn(user);
 
         ResponseEntity<User> response = userController.updateUser(1L, user);
@@ -149,7 +149,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void testUpdateUser_NotFound() {
+    void testUpdateUserNotFound() {
         when(userService.updateUser(eq(1L), any(User.class))).thenReturn(null);
 
         ResponseEntity<User> response = userController.updateUser(1L, user);

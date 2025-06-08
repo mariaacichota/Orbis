@@ -47,163 +47,212 @@ class EventControllerTest {
         mockUser.setId(VALID_USER_ID);
         mockUser.setRole(Role.ORGANIZADOR);
 
-        mockEventDTO = new EventDTO();
-        mockEventDTO.setTitle("Mock Event");
-        mockEventDTO.setOrganizerId(VALID_USER_ID);
-
         mockEvent = new Event();
-        mockEvent.setTitle("Mock Event");
-    }
+        mockEvent.setId(1L);
+        mockEvent.setTitle("Test Event");
+        mockEvent.setMaxTickets(10);
+        mockEvent.setOrganizer(mockUser);
 
-    @Test
-    void createEvent_ShouldReturnOk_WhenValid() throws IOException {
-        MultipartFile mockImage = new MockMultipartFile("image", "image.jpg", "image/jpeg", new byte[0]);
-
-        when(userService.getUserById(VALID_USER_ID)).thenReturn(Optional.of(mockUser));
-        when(eventService.createEvent(any(EventDTO.class), any(MultipartFile.class), eq(mockUser)))
-                .thenReturn(mockEvent);
-
-        ResponseEntity<Event> response = eventController.createEvent(mockEventDTO, mockImage, null);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Mock Event", response.getBody().getTitle());
-    }
-
-    @Test
-    void createEvent_ShouldReturnBadRequest_WhenUserNotFound() {
-        when(userService.getUserById(VALID_USER_ID)).thenReturn(Optional.empty());
-
+        mockEventDTO = new EventDTO();
+        mockEventDTO.setTitle("Test Event");
         mockEventDTO.setOrganizerId(VALID_USER_ID);
+        mockEventDTO.setMaxTickets(10);
+    }
+
+    @Test
+    void createEventSuccess() throws IOException {
+        when(userService.getUserById(VALID_USER_ID)).thenReturn(Optional.of(mockUser));
+        when(eventService.createEvent(any(EventDTO.class), any(), any(User.class))).thenReturn(mockEvent);
+
         ResponseEntity<Event> response = eventController.createEvent(mockEventDTO, null, null);
 
-        assertEquals(400, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+        assertEquals(mockEvent.getId(), response.getBody().getId());
     }
 
     @Test
-    void updateEvent_ShouldReturnOk_WhenValid() throws IOException {
-        Long eventId = 1L;
-        MultipartFile mockImage = new MockMultipartFile("image", "image.jpg", "image/jpeg", new byte[0]);
-
+    void createEventWithImageSuccess() throws IOException {
+        MultipartFile image = new MockMultipartFile("image", "test.jpg", "image/jpeg", "test image content".getBytes());
         when(userService.getUserById(VALID_USER_ID)).thenReturn(Optional.of(mockUser));
-        when(eventService.updateEvent(eq(eventId), any(EventDTO.class), eq(mockImage), eq(VALID_USER_ID)))
-                .thenReturn(mockEvent);
+        when(eventService.createEvent(any(EventDTO.class), eq(image), any(User.class))).thenReturn(mockEvent);
 
-        ResponseEntity<Event> response = eventController.updateEvent(eventId, mockEventDTO, mockImage, null);
+        ResponseEntity<Event> response = eventController.createEvent(mockEventDTO, image, null);
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Mock Event", response.getBody().getTitle());
+        assertEquals(200, response.getStatusCode().value());
+        assertNotNull(response.getBody());
     }
 
     @Test
-    void updateEvent_ShouldReturnBadRequest_WhenUserNotFound() {
-        Long eventId = 1L;
-
-        when(userService.getUserById(VALID_USER_ID)).thenReturn(Optional.empty());
-        mockEventDTO.setOrganizerId(VALID_USER_ID);
-
-        ResponseEntity<Event> response = eventController.updateEvent(eventId, mockEventDTO, null, null);
-
-        assertEquals(400, response.getStatusCodeValue());
-    }
-
-    @Test
-    void deleteEvent_ShouldReturnNoContent_WhenValid() {
-        Long eventId = 1L;
-
-        when(userService.getUserById(VALID_USER_ID)).thenReturn(Optional.of(mockUser));
-        doNothing().when(eventService).deleteEvent(eventId, VALID_USER_ID);
-
-        EventDTO dto = new EventDTO();
-        dto.setOrganizerId(VALID_USER_ID);
-
-        ResponseEntity<Void> response = eventController.deleteEvent(eventId, dto);
-
-        assertEquals(204, response.getStatusCodeValue());
-    }
-
-    @Test
-    void deleteEvent_ShouldReturnBadRequest_WhenOrganizerIdIsMissing() {
-        Long eventId = 1L;
-        ResponseEntity<Void> response = eventController.deleteEvent(eventId, null);
-
-        assertEquals(400, response.getStatusCodeValue());
-    }
-
-    @Test
-    void deleteEvent_ShouldReturnNotFound_WhenUserNotFound() {
-        Long eventId = 1L;
-
-        EventDTO dto = new EventDTO();
-        dto.setOrganizerId(VALID_USER_ID);
-
+    void createEventUserNotFound() {
         when(userService.getUserById(VALID_USER_ID)).thenReturn(Optional.empty());
 
-        ResponseEntity<Void> response = eventController.deleteEvent(eventId, dto);
+        ResponseEntity<Event> response = eventController.createEvent(mockEventDTO, null, null);
 
-        assertEquals(404, response.getStatusCodeValue());
+        assertEquals(400, response.getStatusCode().value());
+        assertNull(response.getBody());
     }
 
     @Test
-    void addParticipant_ShouldReturnOk_WhenEventHasSpace() {
-        Long eventId = 1L;
-        User user = new User();
-        user.setId(2L);
+    void createEventIOExceptionHandling() throws IOException {
+        when(userService.getUserById(VALID_USER_ID)).thenReturn(Optional.of(mockUser));
+        when(eventService.createEvent(any(EventDTO.class), any(), any(User.class))).thenThrow(new IOException());
 
-        Event event = new Event();
-        event.setMaxTickets(10);
-        event.setParticipants(List.of());
+        ResponseEntity<Event> response = eventController.createEvent(mockEventDTO, null, null);
 
-        when(eventService.getEventById(eventId)).thenReturn(Optional.of(event));
-        doNothing().when(eventService).addParticipant(eventId, user.getId());
+        assertEquals(500, response.getStatusCode().value());
+        assertNull(response.getBody());
+    }
 
-        ResponseEntity<String> response = eventController.addParticipant(eventId, user);
+    @Test
+    void listEventsSuccess() {
+        List<Event> events = List.of(mockEvent);
+        when(eventService.listEvents()).thenReturn(events);
 
-        assertEquals(200, response.getStatusCodeValue());
+        ResponseEntity<List<Event>> response = eventController.listEvents();
+
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals(1, response.getBody().size());
+    }
+
+    @Test
+    void searchEventsSuccess() {
+        List<Event> events = List.of(mockEvent);
+        when(eventService.searchByCategoryAndTag("category", "tag")).thenReturn(events);
+
+        ResponseEntity<List<Event>> response = eventController.searchEvents("category", "tag");
+
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals(1, response.getBody().size());
+    }
+
+    @Test
+    void getEventByIdSuccess() {
+        when(eventService.getEventById(1L)).thenReturn(Optional.of(mockEvent));
+
+        ResponseEntity<Event> response = eventController.getEventById(1L);
+
+        assertEquals(200, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    void getEventByIdNotFound() {
+        when(eventService.getEventById(1L)).thenReturn(Optional.empty());
+
+        ResponseEntity<Event> response = eventController.getEventById(1L);
+
+        assertEquals(404, response.getStatusCode().value());
+    }
+
+    @Test
+    void deleteEventSuccess() {
+        EventDTO deleteEventDTO = new EventDTO();
+        deleteEventDTO.setOrganizerId(VALID_USER_ID);
+
+        when(userService.getUserById(VALID_USER_ID)).thenReturn(Optional.of(mockUser));
+        doNothing().when(eventService).deleteEvent(1L, VALID_USER_ID);
+
+        ResponseEntity<Void> response = eventController.deleteEvent(1L, deleteEventDTO);
+
+        assertEquals(204, response.getStatusCode().value());
+    }
+
+    @Test
+    void deleteEventUserNotFound() {
+        EventDTO deleteEventDTO = new EventDTO();
+        deleteEventDTO.setOrganizerId(VALID_USER_ID);
+
+        when(userService.getUserById(VALID_USER_ID)).thenReturn(Optional.empty());
+
+        ResponseEntity<Void> response = eventController.deleteEvent(1L, deleteEventDTO);
+
+        assertEquals(404, response.getStatusCode().value());
+    }
+
+    @Test
+    void deleteEventNoOrganizerIdProvided() {
+        ResponseEntity<Void> response = eventController.deleteEvent(1L, null);
+        assertEquals(400, response.getStatusCode().value());
+    }
+
+    @Test
+    void addParticipantSuccess() {
+        when(eventService.getEventById(1L)).thenReturn(Optional.of(mockEvent));
+        doNothing().when(eventService).addParticipant(1L, VALID_USER_ID);
+
+        ResponseEntity<String> response = eventController.addParticipant(1L, mockUser);
+
+        assertEquals(200, response.getStatusCode().value());
         assertEquals("User added as a participant.", response.getBody());
     }
 
     @Test
-    void addParticipant_ShouldReturnBadRequest_WhenEventNotFound() {
-        Long eventId = 1L;
-        User user = new User();
-        user.setId(2L);
+    void addParticipantEventNotFound() {
+        when(eventService.getEventById(1L)).thenReturn(Optional.empty());
 
-        when(eventService.getEventById(eventId)).thenReturn(Optional.empty());
+        ResponseEntity<String> response = eventController.addParticipant(1L, mockUser);
 
-        ResponseEntity<String> response = eventController.addParticipant(eventId, user);
-
-        assertEquals(400, response.getStatusCodeValue());
+        assertEquals(400, response.getStatusCode().value());
+        assertEquals("Event not found", response.getBody());
     }
 
     @Test
-    void addParticipant_ShouldReturnBadRequest_WhenEventFull() {
-        Long eventId = 1L;
-        User user = new User();
-        user.setId(2L);
+    void addParticipantEventFull() {
+        Event fullEvent = new Event();
+        fullEvent.setMaxTickets(1);
+        User existingParticipant = new User();
+        existingParticipant.setId(2L);
+        fullEvent.getParticipants().add(existingParticipant);
 
-        Event event = new Event();
-        event.setMaxTickets(1);
-        event.setParticipants(List.of(new User())); // Já tem 1 participante
+        when(eventService.getEventById(1L)).thenReturn(Optional.of(fullEvent));
 
-        when(eventService.getEventById(eventId)).thenReturn(Optional.of(event));
+        ResponseEntity<String> response = eventController.addParticipant(1L, mockUser);
 
-        ResponseEntity<String> response = eventController.addParticipant(eventId, user);
-
-        assertEquals(400, response.getStatusCodeValue());
+        assertEquals(400, response.getStatusCode().value());
         assertEquals("Event has reached the maximum number of participants.", response.getBody());
+    }
+
+    @Test
+    void listEventsByOrganizerSuccess() {
+        List<Event> events = List.of(mockEvent);
+        when(eventService.listEventsByOrganizer(VALID_USER_ID)).thenReturn(events);
+
+        ResponseEntity<List<Event>> response = eventController.listEventsByOrganizer(VALID_USER_ID);
+
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals(1, response.getBody().size());
+    }
+
+    @Test
+    void updateEventSuccess() throws IOException {
+        when(userService.getUserById(VALID_USER_ID)).thenReturn(Optional.of(mockUser));
+        when(eventService.updateEvent(eq(1L), any(EventDTO.class), isNull(), eq(VALID_USER_ID))).thenReturn(mockEvent);
+
+        ResponseEntity<Event> response = eventController.updateEvent(1L, mockEventDTO, null, null);
+
+        assertEquals(200, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    void updateEventUserNotFound() {
+        when(userService.getUserById(VALID_USER_ID)).thenReturn(Optional.empty());
+
+        ResponseEntity<Event> response = eventController.updateEvent(1L, mockEventDTO, null, null);
+
+        assertEquals(400, response.getStatusCode().value());
+    }
+
+    @Test
+    void updateEventIOExceptionHandling() throws IOException {
+        when(userService.getUserById(VALID_USER_ID)).thenReturn(Optional.of(mockUser));
+        when(eventService.updateEvent(eq(1L), any(EventDTO.class), isNull(), eq(VALID_USER_ID)))
+            .thenThrow(new IOException());
+
+        ResponseEntity<Event> response = eventController.updateEvent(1L, mockEventDTO, null, null);
+
+        assertEquals(500, response.getStatusCode().value());
     }
 }
 
-// Não consegui rodar esse test.
-//    @Test
-//    void createEvent_ShouldReturnServerError_WhenIOException() throws IOException {
-//        MultipartFile mockImage = mock(MultipartFile.class);
-//        when(mockImage.getBytes()).thenThrow(new IOException("Error reading file"));
-//
-//        when(userService.getUserById(VALID_USER_ID)).thenReturn(Optional.of(mockUser));
-//
-//        mockEventDTO.setOrganizerId(VALID_USER_ID);
-//        ResponseEntity<Event> response = eventController.createEvent(mockEventDTO, mockImage, null);
-//
-//        assertEquals(500, response.getStatusCodeValue());
-//    }
