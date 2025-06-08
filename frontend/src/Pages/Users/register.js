@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const AppUserRegister = ({ onRegister }) => {
+const AppUserRegister = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,9 +18,28 @@ const AppUserRegister = ({ onRegister }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (onRegister) {
-      onRegister(formData);
-    }
+
+    fetch("http://localhost:8080/api/auth/sign-up", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData)
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(text || "Erro ao registrar");
+        }
+        const text = await res.text();
+        return text ? JSON.parse(text) : {};
+      })
+      .then((data) => {
+        localStorage.setItem("userName", data.name || "");
+        localStorage.setItem("userId", data.id || "");
+        navigate("/logado");
+      })
+      .catch((err) => {
+        alert("Erro: " + err.message);
+      });
   };
 
   return (

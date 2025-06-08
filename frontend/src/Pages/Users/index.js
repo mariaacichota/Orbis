@@ -19,6 +19,9 @@ const Login = () => {
         return res.json();
       })
       .then((data) => {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userName", data.name);
+        localStorage.setItem("userId", data.id);
         alert("Login realizado com sucesso!");
         navigate("/logado");
       })
