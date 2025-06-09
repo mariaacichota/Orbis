@@ -173,3 +173,18 @@ npm start
 | GET    | /users                     | ✅           | Lista usuários                   |
 
 ---
+
+### 👥 Colaboradores  
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/ameliagalvao"><img src="https://avatars.githubusercontent.com/ameliagalvao" width="80px;" alt="Amélia Galvão"/><br /><sub><b>Amélia Galvão</b></sub></a><br /><a href="#" title="Code">💻🛠️</a></td>
+    <td align="center"><a href="https://github.com/ArielCAlves"><img src="https://avatars.githubusercontent.com/ArielCAlves" width="80px;" alt="Ariel Alves"/><br /><sub><b>Ariel Alves</b></sub></a><br /><a href="#" title="Code">💻🛠️</a></td>
+    <td align="center"><a href="https://github.com/Abrahao02"><img src="https://avatars.githubusercontent.com/Abrahao02" width="80px;" alt="Eduardo Abrahao"/><br /><sub><b>Eduardo Abrahao</b></sub></a><br /><a href="#" title="Code">💻🛠️</a></td>
+    <td align="center"><a href="https://github.com/Eduardo-Kolberg"><img src="https://avatars.githubusercontent.com/Eduardo-Kolberg" width="80px;" alt="Eduardo Kolberg"/><br /><sub><b>Eduardo Kolberg</b></sub></a><br /><a href="#" title="Code">💻🛠️</a></td>
+    <td align="center"><a href="https://github.com/mariaacichota"><img src="https://avatars.githubusercontent.com/mariaacichota" width="80px;" alt="Maria Cichota"/><br /><sub><b>Maria Cichota</b></sub></a><br /><a href="#" title="Code">💻🛠️</a></td>
+    <td align="center"><a href="https://github.com/mariaacichota"><img src="https://github.com/Raquelsantos242" width="80px;" alt="Raquel Braga"/><br /><sub><b>Raquel Braga</b></sub></a><br /><a href="#" title="Code">💻🛠️</a></td>
+    <td align="center"><a href="https://github.com/wendel315"><img src="https://avatars.githubusercontent.com/wendel315" width="80px;" alt="Wendel Marins"/><br /><sub><b>Wendel Marins</b></sub></a><br /><a href="#" title="Code">💻🛠️</a></td>
+  </tr>
+</table>
+
+---
