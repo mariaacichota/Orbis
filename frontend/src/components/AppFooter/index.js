@@ -11,7 +11,7 @@ function AppFooter() {
       </Link>
 
       <p className="dark:text-gray-200 text-gray-700 text-center m-20">
-        © Projeto de Bloco - Orbi - Gestão de Eventos
+        © Projeto de Bloco - Orbis - Gestão de Eventos
       </p>
 
       <Link to="/politica">
