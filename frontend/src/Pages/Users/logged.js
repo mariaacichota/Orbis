@@ -7,15 +7,31 @@ const Logged = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("userName");
     const storedId = localStorage.getItem("userId");
-    if (storedUser) setUserName(storedUser);
+    const token = localStorage.getItem("token");
+
     if (storedId) setUserId(storedId);
+
+    fetch(`http://localhost:8080/users/${storedId}`, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        setUserName(data.nome || data.name || data.fullName || "");
+        localStorage.setItem("userName", data.nome || data.name || data.fullName || "");
+      })
+      .catch(err => console.error("Erro:", err));
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("userName");
     localStorage.removeItem("userId");
+    localStorage.removeItem("token");
     navigate("/perfil");
   };
 
@@ -27,8 +43,13 @@ const Logged = () => {
     if (!userId) return alert("ID do usuário não encontrado.");
     if (!window.confirm("Tem certeza que deseja excluir sua conta?")) return;
 
+    const token = localStorage.getItem("token");
+
     fetch(`http://localhost:8080/users/${userId}`, {
-      method: "DELETE"
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
     })
       .then((res) => {
         if (!res.ok) throw new Error("Erro ao deletar conta");
