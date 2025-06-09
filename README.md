@@ -182,7 +182,7 @@ npm start
     <td align="center"><a href="https://github.com/Abrahao02"><img src="https://avatars.githubusercontent.com/Abrahao02" width="80px;" alt="Eduardo Abrahao"/><br /><sub><b>Eduardo Abrahao</b></sub></a><br /><a href="#" title="Code">💻🛠️</a></td>
     <td align="center"><a href="https://github.com/Eduardo-Kolberg"><img src="https://avatars.githubusercontent.com/Eduardo-Kolberg" width="80px;" alt="Eduardo Kolberg"/><br /><sub><b>Eduardo Kolberg</b></sub></a><br /><a href="#" title="Code">💻🛠️</a></td>
     <td align="center"><a href="https://github.com/mariaacichota"><img src="https://avatars.githubusercontent.com/mariaacichota" width="80px;" alt="Maria Cichota"/><br /><sub><b>Maria Cichota</b></sub></a><br /><a href="#" title="Code">💻🛠️</a></td>
-    <td align="center"><a href="https://github.com/mariaacichota"><img src="https://github.com/Raquelsantos242" width="80px;" alt="Raquel Braga"/><br /><sub><b>Raquel Braga</b></sub></a><br /><a href="#" title="Code">💻🛠️</a></td>
+    <td align="center"><a href="https://github.com/Raquelsantos242"><img src="https://avatars.githubusercontent.com/Raquelsantos242" width="80px;" alt="Raquel Braga"/><br /><sub><b>Raquel Braga</b></sub></a><br /><a href="#" title="Code">💻🛠️</a></td>
     <td align="center"><a href="https://github.com/wendel315"><img src="https://avatars.githubusercontent.com/wendel315" width="80px;" alt="Wendel Marins"/><br /><sub><b>Wendel Marins</b></sub></a><br /><a href="#" title="Code">💻🛠️</a></td>
   </tr>
 </table>
