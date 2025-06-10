@@ -70,11 +70,13 @@ public class AuthController {
         String rawPassword = user.getPassword();
 
         try {
-            userService.createUser(user);
+            var created = userService.createUser(user);
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getEmail(), rawPassword));
-
             Map<String, String> response = new HashMap<>();
+            response.put("name", created.getName());
+            response.put("id", created.getId().toString());
+            response.put("role", created.getRole().toString());
             response.put("token", "Bearer " + jwtTokenProvider.generateToken(authentication));
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException ex) {
