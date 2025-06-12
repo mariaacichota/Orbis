@@ -33,9 +33,7 @@ const AppUserRegister = () => {
         return text ? JSON.parse(text) : {};
       })
       .then((data) => {
-        localStorage.setItem("userName", data.name || "");
-        localStorage.setItem("userId", data.id || "");
-        navigate("/logado");
+        navigate("/perfil");
       })
       .catch((err) => {
         alert("Erro: " + err.message);

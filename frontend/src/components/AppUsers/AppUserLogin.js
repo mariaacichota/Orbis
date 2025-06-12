@@ -1,13 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AppUserLogin = () => {
+
   const [formData, setFormData] = useState({
     email: "",
     password: ""
   });
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      navigate("/logado");
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,8 +40,14 @@ const AppUserLogin = () => {
       }
 
       const user = await response.json();
+
       localStorage.setItem("userName", user.name);
+      localStorage.setItem("userId", user.id);
+      localStorage.setItem("role", user.role);
+      localStorage.setItem("email", user.emailAddress);
+      localStorage.setItem("token", user.token);
       localStorage.setItem("userData", JSON.stringify(user));
+
       navigate("/logado");
     } catch (err) {
       alert("Erro: " + err.message);
@@ -71,17 +85,17 @@ const AppUserLogin = () => {
           Cadastrar
         </button>
         <div style={{ marginTop: "15px", textAlign: "center" }}>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                alert("Funcionalidade 'Esqueci minha senha' será implementada em breve.");
-              }}
-              style={{ color: "#007bff", textDecoration: "underline" }}
-            >
-              Esqueci minha senha
-            </a>
-          </div>
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              alert("Funcionalidade 'Esqueci minha senha' será implementada em breve.");
+            }}
+            style={{ color: "#007bff", textDecoration: "underline" }}
+          >
+            Esqueci minha senha
+          </a>
+        </div>
       </form>
     </div>
   );
