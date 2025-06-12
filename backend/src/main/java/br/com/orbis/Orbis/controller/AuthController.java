@@ -48,8 +48,12 @@ public class AuthController {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, rawPassword));
+            User logedUser = userService.getUserByEmail(email);
             Map<String, String> response = new HashMap<>();
             response.put("token", "Bearer " + jwtTokenProvider.generateToken(authentication));
+            response.put("id", logedUser.getId().toString());
+            response.put("name", logedUser.getName());
+            response.put("role", logedUser.getRole().toString());
             log.info("Login realizado com sucesso para o e-mail: {}", email);
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
