@@ -62,6 +62,7 @@ class SecurityConfigTest {
         doReturn(mockChain).when(http).build();
         doReturn(http).when(http).addFilterBefore(any(), any());
 
+        doAnswer(invocation -> http).when(http).cors(any(Customizer.class));
         doAnswer(invocation -> http).when(http).csrf(any(Customizer.class));
         doAnswer(invocation -> http).when(http).sessionManagement(any(Customizer.class));
         doAnswer(invocation -> http).when(http).authorizeHttpRequests(any(Customizer.class));
@@ -73,6 +74,7 @@ class SecurityConfigTest {
         assertNotNull(result);
         assertEquals(mockChain, result);
 
+        verify(http).cors(any(Customizer.class));
         verify(http).csrf(any(Customizer.class));
         verify(http).sessionManagement(any(Customizer.class));
         verify(http).authorizeHttpRequests(any(Customizer.class));

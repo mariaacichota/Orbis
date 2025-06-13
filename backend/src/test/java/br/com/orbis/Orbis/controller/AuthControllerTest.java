@@ -1,6 +1,7 @@
 package br.com.orbis.Orbis.controller;
 
 import br.com.orbis.Orbis.exception.UserValidationException;
+import br.com.orbis.Orbis.model.Role;
 import br.com.orbis.Orbis.model.User;
 import br.com.orbis.Orbis.security.JwtTokenProvider;
 import br.com.orbis.Orbis.service.UserService;
@@ -13,10 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,34 +45,74 @@ class AuthControllerTest {
     @Test
     void testSignInSuccess() {
         Map<String, String> loginData = new HashMap<>();
-        loginData.put("email", "user@example.com");
-        loginData.put("password", "password");
+        loginData.put("email", "newuser@example.com");
+        loginData.put("password", "password123");
 
+        User mockUser = new User();
+        mockUser.setEmail("newuser@example.com");
+        mockUser.setPassword("password123");
+        mockUser.setName("Test User");
+        mockUser.setId(1L);
+        mockUser.setRole(Role.ORGANIZADOR);
+
+        Authentication mockAuth = new UsernamePasswordAuthenticationToken(mockUser.getEmail(), mockUser.getPassword());
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(null);
-        when(jwtTokenProvider.generateToken(any())).thenReturn("Bearer dummyToken");
+                .thenReturn(mockAuth);
+
+        when(userService.getUserByEmail("newuser@example.com")).thenReturn(mockUser);
+
+        when(jwtTokenProvider.generateToken(any())).thenReturn("dummyToken");
 
         ResponseEntity<?> response = authController.signIn(loginData);
 
         assertNotNull(response);
-        assertTrue(Objects.requireNonNull(response.getBody()).toString().contains("Bearer dummyToken"));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Map<String, String> responseBody = (Map<String, String>) response.getBody();
+        assertNotNull(responseBody);
+        assertEquals("Bearer dummyToken", responseBody.get("token"));
+        assertEquals("Test User", responseBody.get("name"));
+        assertEquals("1", responseBody.get("id"));
+        assertEquals("ORGANIZADOR", responseBody.get("role"));
+
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(userService).getUserByEmail("newuser@example.com");
+        verify(jwtTokenProvider).generateToken(any());
     }
 
     @Test
     void testSignUpSuccess() {
-        Map<String, String> signUpData = new HashMap<>();
-        signUpData.put("email", "newuser@example.com");
-        signUpData.put("password", "password");
+        User newUser = new User();
+        newUser.setId(1L);
+        newUser.setEmail("newuser@example.com");
+        newUser.setPassword("password123");
+        newUser.setName("Test User");
+        newUser.setId(1L);
+        newUser.setRole(Role.ORGANIZADOR);
 
-        when(userService.createUser(any())).thenReturn(null);
+        when(userService.createUser(any(User.class))).thenReturn(newUser);
+
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(null);
-        when(jwtTokenProvider.generateToken(any())).thenReturn("Bearer dummyToken");
+                .thenReturn(new UsernamePasswordAuthenticationToken(newUser.getEmail(), newUser.getPassword()));
 
-        ResponseEntity<?> response = authController.signUp(new User());
+        when(jwtTokenProvider.generateToken(any())).thenReturn("dummyToken");
+
+        ResponseEntity<?> response = authController.signUp(newUser);
 
         assertNotNull(response);
-        assertTrue(Objects.requireNonNull(response.getBody()).toString().contains("Bearer dummyToken"));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> responseBody = (Map<String, String>) response.getBody();
+        assertNotNull(responseBody);
+        assertEquals("Bearer dummyToken", responseBody.get("token"));
+        assertEquals("Test User", responseBody.get("name"));
+        assertEquals("1", responseBody.get("id"));
+        assertEquals("ORGANIZADOR", responseBody.get("role"));
+
+        verify(userService).createUser(any(User.class));
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(jwtTokenProvider).generateToken(any());
     }
 
     @Test
