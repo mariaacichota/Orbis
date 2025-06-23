@@ -18,7 +18,7 @@ const AppUserLogin = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/sign-in", {
+      const response = await fetch("/api/auth/sign-in", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

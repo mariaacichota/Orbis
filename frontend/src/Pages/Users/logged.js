@@ -12,7 +12,7 @@ const Logged = () => {
 
     if (storedId) setUserId(storedId);
 
-    fetch(`http://localhost:8080/users/${storedId}`, {
+    fetch(`/api/users/${storedId}`, {
       method: "GET",
       mode: "cors",
       headers: {
@@ -45,7 +45,7 @@ const Logged = () => {
 
     const token = localStorage.getItem("token");
 
-    fetch(`http://localhost:8080/users/${userId}`, {
+    fetch(`/api/users/${userId}`, {
       method: "DELETE",
       headers: {
         "Authorization": `Bearer ${token}`
