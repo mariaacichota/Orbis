@@ -17,20 +17,16 @@ const Logged = () => {
     setEmail(localStorage.getItem("email"));
   }, []);
 
-  fetch(`/api/users/${storedId}`, {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      }
-    })
-      .then(res => res.json())
-      .then(data => {
-        setUserName(data.nome || data.name || data.fullName || "");
-        localStorage.setItem("userName", data.nome || data.name || data.fullName || "");
-      })
-      .catch(err => console.error("Erro:", err));
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setUserName(localStorage.getItem("userName"));
+      setRole(localStorage.getItem("role"));
+      setUserId(localStorage.getItem("userId"));
+      setEmail(localStorage.getItem("email"));
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const handleLogout = () => {
@@ -52,7 +48,7 @@ const Logged = () => {
     if (!window.confirm("Tem certeza que deseja excluir sua conta?")) return;
     const token = localStorage.getItem("token");
 
-    fetch(`/api/users/${userId}`, {
+    fetch(`http://localhost:8080/users/${userId}`, {
       method: "DELETE",
       headers: {
         Authorization: `${token}`,
