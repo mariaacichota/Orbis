@@ -27,16 +27,3 @@ spec:
           value: "postgres"
         - name: SPRING_DATASOURCE_PASSWORD
           value: "postgres"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: orbis-backend
-spec:
-  selector:
-    app: orbis-backend
-  ports:
-    - port: 8080
-      targetPort: 8080
-  type: LoadBalancer
-

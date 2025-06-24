@@ -16,7 +16,7 @@ function AppHeader({ collapsed, onToggleSidebar }) {
                 style={{ fontSize: "18px" }}
             />
             <Typography.Title level={3} className="title" style={{ margin: 0 }}>
-                Orbi - Gestão de Eventos
+                Orbis - Gestão de Eventos
             </Typography.Title>
         </div>
     );

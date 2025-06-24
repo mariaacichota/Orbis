@@ -1,0 +1,7 @@
+../backend/target/
+../frontend/node_modules/
+../frontend/build/
+../sql/scripts/*.bak
+../sql/scripts/*.log
+../sql/scripts/__pycache__/
+../.git/

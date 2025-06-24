@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orbis-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orbis-frontend
+  template:
+    metadata:
+      labels:
+        app: orbis-frontend
+    spec:
+      containers:
+        - name: orbis-frontend
+          image: orbis-frontend:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80

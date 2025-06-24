@@ -19,10 +19,11 @@ const AppUserRegister = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    fetch("http://localhost:8080/api/auth/sign-up", {
+    fetch("/api/auth/sign-up", {
       method: "POST",
+      credentials: 'include',
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData)
+      body: JSON.stringify(formData)   
     })
       .then(async (res) => {
         if (!res.ok) {
@@ -33,7 +34,10 @@ const AppUserRegister = () => {
         return text ? JSON.parse(text) : {};
       })
       .then((data) => {
-        navigate("/perfil");
+        localStorage.setItem("userName", data.name || "");
+        localStorage.setItem("userId", data.id || "");
+        localStorage.setItem("token", data.token || ""); 
+        navigate("/logado");
       })
       .catch((err) => {
         alert("Erro: " + err.message);
