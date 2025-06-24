@@ -1,0 +1,91 @@
+name: Orbis-Workflow
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+      - 'docker/**'
+      - 'k8s/**'
+      - 'pom.xml'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Build do Backend (Maven)
+        run: |
+          mvn clean package -DskipTests
+
+      - name: Build do Frontend (npm)
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      - name: Configurar Minikube
+        uses: medyagh/setup-minikube@master
+        with:
+          minikube-version: 'latest'
+          kubernetes-version: 'latest'
+
+      - name: Build Docker Images no Minikube
+        run: |
+          eval $(minikube docker-env)
+          docker build -t orbis-backend:latest -f docker/backend.Dockerfile .
+          docker build -t orbis-frontend:latest -f docker/frontend.Dockerfile .
+
+      - name: Deploy PostgreSQL
+        run: |
+          kubectl apply -f k8s/postgres-configmap.yaml
+          kubectl apply -f k8s/postgres-pvc.yaml
+          kubectl apply -f k8s/postgres-deployment.yaml
+          kubectl apply -f k8s/postgres-service.yaml
+
+      - name: Aguardar PostgreSQL estar pronto
+        run: |
+          kubectl wait --for=condition=ready pod -l app=postgres --timeout=300s
+
+      - name: Deploy Backend
+        run: |
+          kubectl apply -f k8s/backend-deployment.yaml
+          kubectl apply -f k8s/backend-service.yaml
+
+      - name: Aguardar Backend estar pronto
+        run: |
+          kubectl wait --for=condition=ready pod -l app=orbis-backend --timeout=300s
+
+      - name: Deploy Frontend
+        run: |
+          kubectl apply -f k8s/frontend-deployment.yaml
+          kubectl apply -f k8s/frontend-service.yaml
+
+      - name: Aguardar Frontend estar pronto
+        run: |
+          kubectl wait --for=condition=ready pod -l app=orbis-frontend --timeout=300s
+
+      - name: Verificar status do deploy
+        run: |
+          kubectl get pods
+          kubectl get services
+          
+      - name: Testar aplicação
+        run: |
+          minikube service orbis-frontend --url
