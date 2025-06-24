@@ -2,17 +2,22 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Logged = () => {
-  const [userName, setUserName] = useState("");
-  const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
 
+  const [userName, setUserName] = useState("");
+  const [role, setRole] = useState("");
+  const [userId, setUserId] = useState("");
+  const [email, setEmail] = useState("");
+
   useEffect(() => {
-    const storedId = localStorage.getItem("userId");
-    const token = localStorage.getItem("token");
 
-    if (storedId) setUserId(storedId);
+    setUserName(localStorage.getItem("userName"));
+    setRole(localStorage.getItem("role"));
+    setUserId(localStorage.getItem("userId"));
+    setEmail(localStorage.getItem("email"));
+  }, []);
 
-    fetch(`/api/users/${storedId}`, {
+  fetch(`/api/users/${storedId}`, {
       method: "GET",
       mode: "cors",
       headers: {
@@ -31,25 +36,27 @@ const Logged = () => {
   const handleLogout = () => {
     localStorage.removeItem("userName");
     localStorage.removeItem("userId");
+    localStorage.removeItem("role");
     localStorage.removeItem("token");
     navigate("/perfil");
   };
 
   const handleEdit = () => {
-    navigate("/perfil");
+    navigate("/editar-usuario", {
+      state: { userName, role, userId, email },
+    });
   };
 
   const handleDelete = () => {
     if (!userId) return alert("ID do usuário não encontrado.");
     if (!window.confirm("Tem certeza que deseja excluir sua conta?")) return;
-
     const token = localStorage.getItem("token");
 
     fetch(`/api/users/${userId}`, {
       method: "DELETE",
       headers: {
-        "Authorization": `Bearer ${token}`
-      }
+        Authorization: `${token}`,
+      },
     })
       .then((res) => {
         if (!res.ok) throw new Error("Erro ao deletar conta");
@@ -64,14 +71,15 @@ const Logged = () => {
   };
 
   return (
-    <div className="container">
-      <h2>{userName ? `Bem-vindo(a), ${userName}!` : "Bem-vindo(a)!"}</h2>
-      <p className="texto">Você está logado no sistema Orbis.</p>
-
-      <button className="resultado" onClick={handleLogout}>Sair</button>
-      <button className="resultado" onClick={handleEdit}>Editar Informações</button>
-      <button className="resultado" onClick={handleDelete}>Deletar Conta</button>
-      <button className="resultado" onClick={handleBuyTicket}>Comprar Ticket</button>
+    <div>
+      <div className="container">
+        <h2>{userName ? `Bem-vindo(a), ${userName}!` : "Bem-vindo(a)!"}</h2>
+        <p className="texto">Tipo de Usuário: {role}</p>
+        <button className="resultado" onClick={handleLogout}>Sair</button>
+        <button className="resultado" onClick={handleEdit}>Editar Informações</button>
+        <button className="resultado" onClick={handleDelete}>Deletar Conta</button>
+        <button className="resultado" onClick={handleBuyTicket}>Comprar Ticket</button>
+      </div>
     </div>
   );
 };

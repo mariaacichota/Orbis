@@ -1,24 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-const AppUserEdit = ({ user = {}, onSave }) => {
+const AppUserEdit = ({ onSave }) => {
+  
+  const userData = JSON.parse(localStorage.getItem("userData")) || {};
+  
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    name: userData.name || "",
+    email: userData.email || "",
     password: "",
-    role: "PARTICIPANTE",
+    role: userData.role || "PARTICIPANTE",
   });
-
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("userData"));
-    if (storedUser) {
-      setFormData({
-        name: storedUser.name || "",
-        email: storedUser.email || "",
-        password: "",
-        role: storedUser.role || "PARTICIPANTE",
-      });
-    }
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,7 +22,7 @@ const AppUserEdit = ({ user = {}, onSave }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="container">
       <h3 style={{ textAlign: "center", marginBottom: "20px" }}>Editar Informações</h3>
 
       <label>Nome:</label>
