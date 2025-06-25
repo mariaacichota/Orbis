@@ -13,7 +13,7 @@ jobs:
   sonar-analysis:
     name: SonarQube Analysis
     runs-on: ubuntu-latest
-    if: ${{ secrets.SONAR_TOKEN != '' }}
+    if: ${{ secrets.SONAR_TOKEN != '' && github.event_name != 'pull_request' }}
     
     steps:
       - uses: actions/checkout@v4
