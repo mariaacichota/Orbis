@@ -31,4 +31,10 @@ jobs:
       - name: Build and test
         run: |
           cd backend
-          mvn -B clean verify 
+          mvn -B clean verify
+
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build 
