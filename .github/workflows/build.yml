@@ -1,4 +1,4 @@
-name: SonarQube
+name: Build and Test
 on:
   push:
     branches:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build and analyze
+    name: Build and test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,13 +21,6 @@ jobs:
           java-version: 17
           distribution: 'zulu'
 
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
@@ -35,9 +28,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Build and analyze
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Build and test
         run: |
           cd backend
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=wendel315_Orbis 
+          mvn -B clean verify 
