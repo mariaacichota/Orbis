@@ -1,0 +1,72 @@
+name: Automatic Backend SonarQube Analysis
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - 'pom.xml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - 'pom.xml'
+
+jobs:
+  sonar-analysis:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build e Test Backend
+        run: |
+          cd backend
+          mvn clean verify
+
+      - name: SonarQube Analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          cd backend
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            mvn sonar:sonar \
+              -Dsonar.projectKey=orbis-backend \
+              -Dsonar.organization=orbis \
+              -Dsonar.host.url=$SONAR_HOST_URL \
+              -Dsonar.login=$SONAR_TOKEN \
+              -Dsonar.pullrequest.key=${{ github.event.number }} \
+              -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+              -Dsonar.pullrequest.base=${{ github.base_ref }} \
+              -Dsonar.pullrequest.github.repository=${{ github.repository }}
+          else
+            mvn sonar:sonar \
+              -Dsonar.projectKey=orbis-backend \
+              -Dsonar.organization=orbis \
+              -Dsonar.host.url=$SONAR_HOST_URL \
+              -Dsonar.login=$SONAR_TOKEN
+          fi
+
+      - name: Verificar qualidade do código
+        run: |
+          echo "Análise do SonarQube concluída"
+          echo "Verifique os resultados em: ${{ secrets.SONAR_HOST_URL }}" 
