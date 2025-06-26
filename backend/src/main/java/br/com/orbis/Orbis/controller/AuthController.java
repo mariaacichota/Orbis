@@ -44,7 +44,6 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> signIn(@RequestBody Map<String, String> loginData) {
         String email = loginData.get("email");
         String rawPassword = loginData.get("password");
-        log.info("[POST] /api/auth/sign-in - Tentativa de login para o e-mail: {}", email);
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, rawPassword));
@@ -54,7 +53,6 @@ public class AuthController {
             response.put("id", logedUser.getId().toString());
             response.put("name", logedUser.getName());
             response.put("role", logedUser.getRole().toString());
-            log.info("Login realizado com sucesso para o e-mail: {}", email);
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
             log.warn("Credenciais inválidas para o e-mail: {}", email);
