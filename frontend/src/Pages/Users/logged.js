@@ -9,15 +9,17 @@ const Logged = () => {
   const [userId, setUserId] = useState("");
   const [email, setEmail] = useState("");
 
-  useEffect(() => {
+useEffect(() => {
+  setUserName(localStorage.getItem("userName"));
+  setRole(localStorage.getItem("role"));
+  setUserId(localStorage.getItem("userId"));
+  setEmail(localStorage.getItem("email"));
 
-    setUserName(localStorage.getItem("userName"));
-    setRole(localStorage.getItem("role"));
-    setUserId(localStorage.getItem("userId"));
-    setEmail(localStorage.getItem("email"));
-  }, []);
+  const storedId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
 
-  fetch(`/api/users/${storedId}`, {
+  if (storedId && token) {
+    fetch(`/api/users/${storedId}`, {
       method: "GET",
       mode: "cors",
       headers: {
@@ -31,7 +33,9 @@ const Logged = () => {
         localStorage.setItem("userName", data.nome || data.name || data.fullName || "");
       })
       .catch(err => console.error("Erro:", err));
-  }, []);
+  }
+}, []);
+
 
   const handleLogout = () => {
     localStorage.removeItem("userName");
