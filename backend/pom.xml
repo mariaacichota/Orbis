@@ -20,6 +20,8 @@
 		<webdrivermanager.version>5.4.1</webdrivermanager.version>
 		<selenium.version>4.11.0</selenium.version>
 		<httpclient5.version>5.4.1</httpclient5.version>
+		<sonar.organization>mariaacichota</sonar.organization>
+  		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 
 	<dependencies>
