@@ -4,7 +4,7 @@ import Register from "../../Pages/Users/register";
 import Cart from "../../Pages/Cart";
 import Events from "../../Pages/Events";
 import EventCreate from "../../Pages/Events/EventCreate";
-import Logged from "../../Pages/Users/Logged";
+import Logged from "../../Pages/Users/logged";
 import Edit from "../../Pages/Users/EditUser";
 import Terms from "../../Pages/Utils/terms";
 import Politics from "../../Pages/Utils/politics";
