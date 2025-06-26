@@ -82,10 +82,8 @@ public class UserController {
 
     @GetMapping("/email/{email}")
     public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
-        log.info("[GET] /users/email/{} - Buscando usuário por e-mail", email);
         User user = userService.getUserByEmail(email);
         if (user == null) {
-            log.info("Usuário com e-mail {} não encontrado.", email);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         log.info("Usuário encontrado: {}", user.getEmail());
