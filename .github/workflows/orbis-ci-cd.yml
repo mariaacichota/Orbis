@@ -62,7 +62,7 @@ jobs:
 
       - name: Aguardar PostgreSQL estar pronto
         run: |
-          kubectl wait --for=condition=ready pod -l app=postgres --timeout=300s
+          kubectl wait --for=condition=ready pod -l app=postgres --timeout=1500s
 
       - name: Deploy Backend
         run: |
@@ -71,7 +71,7 @@ jobs:
 
       - name: Aguardar Backend estar pronto
         run: |
-          kubectl wait --for=condition=ready pod -l app=orbis-backend --timeout=300s
+          kubectl wait --for=condition=ready pod -l app=orbis-backend --timeout=1500s
 
       - name: Deploy Frontend
         run: |
@@ -80,7 +80,7 @@ jobs:
 
       - name: Aguardar Frontend estar pronto
         run: |
-          kubectl wait --for=condition=ready pod -l app=orbis-frontend --timeout=300s
+          kubectl wait --for=condition=ready pod -l app=orbis-frontend --timeout=1500s
 
       - name: Verificar status do deploy
         run: |
