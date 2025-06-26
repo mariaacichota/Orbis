@@ -1,5 +1,4 @@
 name: Build and Test
-
 on:
   push:
     branches:
@@ -9,12 +8,12 @@ on:
 
 jobs:
   build:
-    name: Build, Test and Analyze
+    name: Build and test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  
+          fetch-depth: 0
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -29,24 +28,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
-      - name: Build and Test
+      - name: Build and test
         run: |
           cd backend
-          mvn -B clean verify
-
-      - name: SonarQube Analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          cd backend
-          mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-            -Dsonar.projectKey=mariaacichota_Orbis \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.organization=mariaacichota
+          mvn -B clean verify 
