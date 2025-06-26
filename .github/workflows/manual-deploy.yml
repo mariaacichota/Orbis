@@ -44,6 +44,7 @@ jobs:
       - name: Build Backend
         if: inputs.deploy_target == 'all' || inputs.deploy_target == 'backend'
         run: |
+          cd backend
           mvn clean package -DskipTests
 
       - name: Build Frontend
