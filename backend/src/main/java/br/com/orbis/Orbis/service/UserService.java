@@ -79,7 +79,6 @@ public class UserService {
     }
 
     public User getUserByEmail(String email) {
-        log.info("Buscando usuário por e-mail: {}", email);
         return userRepository.findByEmail(email);
     }
 
