@@ -5,7 +5,7 @@ import Cart from "../../Pages/Cart";
 import Events from "../../Pages/Events";
 import EventCreate from "../../Pages/Events/EventCreate";
 import Logged from "../../Pages/Users/logged";
-import Edit from "../../Pages/Users/edit";
+import Edit from "../../Pages/Users/EditUser";
 import Terms from "../../Pages/Utils/terms";
 import Politics from "../../Pages/Utils/politics";
 import PrivateRoute from "./PrivateRoute";

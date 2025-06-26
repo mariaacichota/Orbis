@@ -2,8 +2,10 @@ package br.com.orbis.Orbis.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
 @Entity
+@Data
 public class Speaker {
 
     @Id
@@ -14,14 +16,5 @@ public class Speaker {
     private String name;
 
     private String bio;
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getBio() { return bio; }
-    public void setBio(String bio) { this.bio = bio; }
 }
 

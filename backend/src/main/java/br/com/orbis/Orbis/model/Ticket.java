@@ -1,44 +1,39 @@
 package br.com.orbis.Orbis.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import java.math.BigDecimal;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 @Entity
+@Data
 public class Ticket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "Ticket type is required")
+    private TicketType type;
+
     @ManyToOne
-    @JoinColumn(name = "id_event", nullable = false)
+    @JoinColumn(name = "event_id")
     private Event event;
 
     @ManyToOne
-    @JoinColumn(name = "id_ticket_types", nullable = false)
-    private TicketType ticketType;
+    @JoinColumn(name = "user_id")
+    @NotNull(message = "User is required")
+    private User user;
 
-    @NotNull(message = "Price is required")
-    @DecimalMin(value = "0.00", message = "Price must be greater than or equal to zero")
-    private BigDecimal price;
+    public Ticket() {}
 
-    @NotNull(message = "Available quantity is required")
-    @Min(value = 0, message = "Available quantity must be zero or greater")
-    private Integer availableQuantity;
+    public Ticket(TicketType type, Event event, User user) {
+        this.type = type;
+        this.event = event;
+        this.user = user;
+    }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public Event getEvent() { return event; }
-    public void setEvent(Event event) { this.event = event; }
-
-    public TicketType getTicketType() { return ticketType; }
-    public void setTicketType(TicketType ticketType) { this.ticketType = ticketType; }
-
-    public BigDecimal getPrice() { return price; }
-    public void setPrice(BigDecimal price) { this.price = price; }
-
-    public Integer getAvailableQuantity() { return availableQuantity; }
-    public void setAvailableQuantity(Integer availableQuantity) { this.availableQuantity = availableQuantity; }
+    public double getPrice() {
+        return type.calculatePrice(event.getBaseTicketPrice());
+    }
 }

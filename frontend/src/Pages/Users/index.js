@@ -6,7 +6,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = (formData) => {
-    fetch("http://localhost:8080/api/auth/login", {
+    fetch("/api/auth/sign-in", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData)
@@ -19,6 +19,9 @@ const Login = () => {
         return res.json();
       })
       .then((data) => {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userName", data.name);
+        localStorage.setItem("userId", data.id);
         alert("Login realizado com sucesso!");
         navigate("/logado");
       })

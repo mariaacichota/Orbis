@@ -59,6 +59,17 @@ public class Event {
     )
     private List<User> participants = new ArrayList<>();
 
+    @NotNull(message = "Base price is required")
+    @Positive(message = "Base price must be greater than zero")
+    private Double baseTicketPrice;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ticket> tickets = new ArrayList<>();
+
+    public boolean hasCapacity() {
+        return tickets.size() < maxTickets;
+    }
+
     @ManyToMany
     @JoinTable(
             name = "event_category",

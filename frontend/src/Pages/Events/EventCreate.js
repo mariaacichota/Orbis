@@ -8,8 +8,8 @@ const FormCreateEvent = () => {
     time: "",
     location: "",
     maxTickets: "",
-    organizerId: "",
-    price: "" // novo campo
+    organizerId: localStorage.getItem("userId") || "",
+    price: ""
   });
 
   const [error, setError] = useState("");
@@ -48,17 +48,25 @@ const FormCreateEvent = () => {
       title: form.title,
       description: form.description,
       date: form.date,
-      time: form.time,
+      startTime: form.time,
+      endTime: form.time,
       location: form.location,
-      maxTickets: parseInt(form.maxTickets),
+      capacity: parseInt(form.maxTickets),
       organizerId: parseInt(form.organizerId),
-      price: parseFloat(form.price)
+      category: "Outro",
+      price: parseFloat(form.price),
+      image: ""
     };
+
+    const token = localStorage.getItem("token");
 
     try {
       const response = await fetch("http://localhost:8080/events", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(payload)
       });
 
@@ -71,7 +79,7 @@ const FormCreateEvent = () => {
           time: "",
           location: "",
           maxTickets: "",
-          organizerId: "",
+          organizerId: localStorage.getItem("userId") || "",
           price: ""
         });
       } else {

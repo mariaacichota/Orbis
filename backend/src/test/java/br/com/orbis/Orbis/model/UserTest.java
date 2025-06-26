@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserTest {
+class UserTest {
     private Validator validator;
 
     @BeforeEach

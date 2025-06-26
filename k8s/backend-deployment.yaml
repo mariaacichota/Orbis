@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orbis-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orbis-backend
+  template:
+    metadata:
+      labels:
+        app: orbis-backend
+    spec:
+      containers:
+      - name: orbis-backend
+        image: orbis-backend:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "prod"
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:postgresql://postgres:5432/orbis"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "postgres"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: "postgres"

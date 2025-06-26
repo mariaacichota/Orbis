@@ -20,7 +20,7 @@ const AppUserRegister = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/users", {
+      const response = await fetch("/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

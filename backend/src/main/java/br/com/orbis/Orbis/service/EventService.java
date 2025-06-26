@@ -22,15 +22,14 @@ public class EventService {
 
     private final UserRepository userRepository;
 
-    private final String UPLOAD_DIR = "uploads/";
+    private static final String UPLOAD_DIR = "uploads/";
 
-    public EventService(EventRepository repository, UserService userService, UserRepository userRepository) { this.repository = repository;
+    public EventService(EventRepository repository, UserRepository userRepository) { this.repository = repository;
         this.userRepository = userRepository;
     }
 
     public Event createEvent(EventDTO eventDto, MultipartFile image, User user) throws IOException {
 
-        // Verifique se o usuário tem a role de ORGANIZADOR
         if (user.getRole() != Role.ORGANIZADOR) {
             throw new IllegalArgumentException("Usuario não é organizador.");
         }
@@ -47,12 +46,9 @@ public class EventService {
         event.setDate(eventDto.getDate());
         event.setTime(eventDto.getTime());
         event.setLocation(eventDto.getLocation());
-        //event.setSpeakers(eventDto.getSpeakers());
-        //event.setActivities(eventDto.getActivities());
         event.setMaxTickets(eventDto.getMaxTickets());
         event.setOrganizer(user);  // Define o organizador
-        //event.setCategories(eventDto.getCategories()); // Associa categorias
-        //event.setTags(eventDto.getTags()); // Associa tags
+        event.setBaseTicketPrice(eventDto.getBaseTicketPrice());
 
         return repository.save(event);
     }
@@ -88,11 +84,8 @@ public class EventService {
         eventToUpdate.setDate(eventDto.getDate());
         eventToUpdate.setTime(eventDto.getTime());
         eventToUpdate.setLocation(eventDto.getLocation());
-        //eventToUpdate.setSpeakers(eventDto.getSpeakers());
-        //eventToUpdate.setActivities(eventDto.getActivities());
         eventToUpdate.setMaxTickets(eventDto.getMaxTickets());
-        //eventToUpdate.setCategories(eventDto.getCategories()); // Atualiza categorias
-        //eventToUpdate.setTags(eventDto.getTags()); // Atualiza tags
+        eventToUpdate.setBaseTicketPrice(eventDto.getBaseTicketPrice());
 
         if (image != null && !image.isEmpty()) {
             String imagePath = UPLOAD_DIR + image.getOriginalFilename();
@@ -118,7 +111,6 @@ public class EventService {
     }
 
     public void addParticipant(Long eventId, Long userId) {
-        // Verificar se o evento existe
         Optional<Event> existingEvent = repository.findById(eventId);
         if (existingEvent.isEmpty()) {
             throw new IllegalArgumentException("Event not found");
@@ -126,7 +118,7 @@ public class EventService {
 
         Event event = existingEvent.get();
 
-        // Verificar se o usuário existe
+
         Optional<User> existingUser = userRepository.getUserById(userId);
         if (existingUser.isEmpty()) {
             throw new IllegalArgumentException("User not found");
@@ -134,26 +126,20 @@ public class EventService {
 
         User user = existingUser.get();
 
-        // Verificar se o usuário tem a role de PARTICIPANTE
         if (user.getRole() != Role.PARTICIPANTE) {
             throw new IllegalArgumentException("User does not have the PARTICIPANTE role");
         }
 
-        // Verificar se o evento já atingiu o limite de participantes
         if (event.getParticipants().size() >= event.getMaxTickets()) {
             throw new IllegalArgumentException("Event has reached the maximum number of participants");
         }
 
-        // Adicionar o usuário à lista de participantes do evento
         event.getParticipants().add(user);
 
-        // Adicionar o evento à lista de eventos do usuário (se necessário)
         user.getParticipatingEvents().add(event);
 
-        // Salvar o evento com o novo participante
         repository.save(event);
 
-        // Atualizar o usuário com o novo evento (se necessário)
         userRepository.save(user);
     }
 

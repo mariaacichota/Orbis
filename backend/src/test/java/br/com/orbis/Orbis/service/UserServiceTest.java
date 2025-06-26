@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
@@ -172,14 +172,14 @@ public class UserServiceTest {
 
     @Test
     void testWeakPasswordCreateUser() {
-        User user = new User();
-        user.setName("User Tester");
-        user.setEmail("tester@email.com");
-        user.setPassword("abc123");
-        user.setRole(Role.PARTICIPANTE);
+        User newUser = new User();
+        newUser.setName("User Tester");
+        newUser.setEmail("tester@email.com");
+        newUser.setPassword("abc123");
+        newUser.setRole(Role.PARTICIPANTE);
 
         UserValidationException exception = assertThrows(UserValidationException.class, () -> {
-            userService.createUser(user);
+            userService.createUser(newUser);
         });
 
         assertEquals("Sua senha precisa conter pelo menos 8 caracteres, sendo pelo menos um deles maiúsculo, " +
@@ -188,14 +188,14 @@ public class UserServiceTest {
 
     @Test
     void testWeakPasswordUpdateUser() {
-        User user = new User();
-        user.setName("User Tester");
-        user.setEmail("tester@email.com");
-        user.setPassword("abc123");
-        user.setRole(Role.PARTICIPANTE);
+        User newUser = new User();
+        newUser.setName("User Tester");
+        newUser.setEmail("tester@email.com");
+        newUser.setPassword("abc123");
+        newUser.setRole(Role.ORGANIZADOR);
 
         UserValidationException exception = assertThrows(UserValidationException.class, () -> {
-            userService.createUser(user);
+            userService.createUser(newUser);
         });
 
         assertEquals("Sua senha precisa conter pelo menos 8 caracteres, sendo pelo menos um deles maiúsculo, " +

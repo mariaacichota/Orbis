@@ -1,23 +1,17 @@
 package br.com.orbis.Orbis.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+public enum TicketType {
+    FULL(1.0),
+    HALF(0.5),
+    VIP(2.0);
 
-@Entity
-public class TicketType {
+    private final double multiplier;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    TicketType(double multiplier) {
+        this.multiplier = multiplier;
+    }
 
-    @NotBlank(message = "Description is required")
-    @Size(max = 50, message = "Description must be at most 50 characters")
-    @Column(unique = true, nullable = false)
-    private String descriptionType;
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getDescriptionType() { return descriptionType; }
-    public void setDescriptionType(String descriptionType) { this.descriptionType = descriptionType; }
+    public double calculatePrice(double basePrice) {
+        return basePrice * multiplier;
+    }
 }

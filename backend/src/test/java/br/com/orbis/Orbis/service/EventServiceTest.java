@@ -143,33 +143,121 @@ class EventServiceTest {
         assertThrows(IllegalArgumentException.class, () ->
                 eventService.deleteEvent(1L, 1L));
     }
+
+    @Test
+    void testAddParticipantSuccess() {
+        Event newEvent = new Event();
+        newEvent.setId(1L);
+        newEvent.setMaxTickets(10);
+
+        User participant = new User();
+        participant.setId(2L);
+        participant.setRole(Role.PARTICIPANTE);
+
+        when(repository.findById(1L)).thenReturn(Optional.of(newEvent));
+        when(userRepository.getUserById(2L)).thenReturn(Optional.of(participant));
+        when(repository.save(any(Event.class))).thenReturn(newEvent);
+        when(userRepository.save(any(User.class))).thenReturn(participant);
+
+        assertDoesNotThrow(() -> eventService.addParticipant(1L, 2L));
+        assertTrue(newEvent.getParticipants().contains(participant));
+        assertTrue(participant.getParticipatingEvents().contains(newEvent));
+        verify(repository).save(newEvent);
+        verify(userRepository).save(participant);
+    }
+
+    @Test
+    void testAddParticipantUserNotFound() {
+        Event newEvent = new Event();
+        newEvent.setId(1L);
+
+        when(repository.findById(1L)).thenReturn(Optional.of(newEvent));
+        when(userRepository.getUserById(2L)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class,
+                () -> eventService.addParticipant(1L, 2L),
+                "User not found"
+        );
+    }
+
+    @Test
+    void testAddParticipantNotParticipanteRole() {
+        Event newEvent = new Event();
+        newEvent.setId(1L);
+
+        User organizador = new User();
+        organizador.setId(2L);
+        organizador.setRole(Role.ORGANIZADOR);
+
+        when(repository.findById(1L)).thenReturn(Optional.of(newEvent));
+        when(userRepository.getUserById(2L)).thenReturn(Optional.of(organizador));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> eventService.addParticipant(1L, 2L),
+                "User does not have the PARTICIPANTE role"
+        );
+    }
+
+    @Test
+    void testAddParticipantEventFull() {
+        Event newEvent = new Event();
+        newEvent.setId(1L);
+        newEvent.setMaxTickets(1);
+
+        User existingParticipant = new User();
+        existingParticipant.setId(1L);
+        newEvent.getParticipants().add(existingParticipant);
+
+        User newParticipant = new User();
+        newParticipant.setId(2L);
+        newParticipant.setRole(Role.PARTICIPANTE);
+
+        when(repository.findById(1L)).thenReturn(Optional.of(newEvent));
+        when(userRepository.getUserById(2L)).thenReturn(Optional.of(newParticipant));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> eventService.addParticipant(1L, 2L),
+                "Event has reached the maximum number of participants"
+        );
+    }
+
+    @Test
+    void testAddParticipantEventNotFound() {
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class,
+                () -> eventService.addParticipant(1L, 2L),
+                "Event not found"
+        );
+    }
+
+    @Test
+    void testGetEventByIdSuccess() {
+        Event newEvent = new Event();
+        newEvent.setId(1L);
+        when(repository.findById(1L)).thenReturn(Optional.of(newEvent));
+
+        Optional<Event> result = eventService.getEventById(1L);
+
+        assertTrue(result.isPresent());
+        assertEquals(1L, result.get().getId());
+    }
+
+    @Test
+    void testGetEventByIdNotFound() {
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+
+        Optional<Event> result = eventService.getEventById(1L);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testGetAllEvents() {
+        List<Event> events = List.of(new Event(), new Event());
+        when(repository.findAll()).thenReturn(events);
+
+        List<Event> result = eventService.listEvents();
+        assertNotNull(result);
+        assertEquals(2, result.size());
+    }
 }
-
-
-// - Não consegui rodar esse teste...
-//     @Test
-//    void testCreateEventWithImage() throws IOException {
-//        when(mockImage.isEmpty()).thenReturn(false);
-//        when(mockImage.getOriginalFilename()).thenReturn("image.png");
-//        when(mockImage.getInputStream()).thenReturn(getClass().getResourceAsStream("/image.png"));
-//        when(repository.save(any(Event.class))).thenReturn(event);
-//
-//        Event createdEvent = eventService.createEvent(eventDTO, mockImage, organizer);
-//
-//        assertNotNull(createdEvent);
-//        verify(repository).save(any(Event.class));
-//    }
-//
-//    @Test
-//    void testUpdateEventWithImage() throws IOException {
-//        when(repository.findById(1L)).thenReturn(Optional.of(event));
-//        when(mockImage.isEmpty()).thenReturn(false);
-//        when(mockImage.getOriginalFilename()).thenReturn("image.png");
-//        when(mockImage.getInputStream()).thenReturn(getClass().getResourceAsStream("/image.png"));
-//        when(repository.save(any(Event.class))).thenReturn(event);
-//
-//        Event result = eventService.updateEvent(1L, eventDTO, mockImage, 1L);
-//
-//        assertEquals("Updated Title", result.getTitle());
-//        verify(repository).save(any(Event.class));
-//    }
