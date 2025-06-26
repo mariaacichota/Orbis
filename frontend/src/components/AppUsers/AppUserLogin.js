@@ -85,16 +85,22 @@ const AppUserLogin = () => {
           Cadastrar
         </button>
         <div style={{ marginTop: "15px", textAlign: "center" }}>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
+          <button
+            type="button"
+            onClick={() => {
               alert("Funcionalidade 'Esqueci minha senha' será implementada em breve.");
             }}
-            style={{ color: "#007bff", textDecoration: "underline" }}
+            style={{ 
+              color: "#007bff", 
+              textDecoration: "underline",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              font: "inherit"
+            }}
           >
             Esqueci minha senha
-          </a>
+          </button>
         </div>
       </form>
     </div>
