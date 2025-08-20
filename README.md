@@ -185,6 +185,9 @@ npm start
     <td align="center"><a href="https://github.com/Raquelsantos242"><img src="https://avatars.githubusercontent.com/Raquelsantos242" width="80px;" alt="Raquel Braga"/><br /><sub><b>Raquel Braga</b></sub></a><br /><a href="#" title="Code">💻🛠️</a></td>
     <td align="center"><a href="https://github.com/wendel315"><img src="https://avatars.githubusercontent.com/wendel315" width="80px;" alt="Wendel Marins"/><br /><sub><b>Wendel Marins</b></sub></a><br /><a href="#" title="Code">💻🛠️</a></td>
   </tr>
+  </td>
+    <td align="center"><a href="https://github.com/LuisaHering"><img src="https://avatars.githubusercontent.com/luisahering" width="80px;" alt="Luisa Hering"/><br /><sub><b>Luisa Hering</b></sub></a><br /><a href="#" title="Code">💻🛠️</a></td>
+  </tr>
 </table>
 
 ---
