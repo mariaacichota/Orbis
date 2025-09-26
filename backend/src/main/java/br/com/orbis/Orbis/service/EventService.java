@@ -8,7 +8,9 @@ import br.com.orbis.Orbis.repository.EventRepository;
 import br.com.orbis.Orbis.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDate;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -67,6 +69,15 @@ public class EventService {
         return repository.findByCategoryAndTag(category, tag);
     }
 
+    public List<Event> searchEventsWithFilters(String title, String location, LocalDate startDate, LocalDate endDate) {
+        Specification<Event> spec = Specification
+                .where(EventSpecifications.hasTitle(title))
+                .and(EventSpecifications.hasLocation(location))
+                .and(EventSpecifications.isAfterDate(startDate))
+                .and(EventSpecifications.isBeforeDate(endDate));
+
+        return repository.findAll(spec);
+    }
 
     public Event updateEvent(Long eventId, EventDTO eventDto, MultipartFile image, Long currentOrganizerId) throws IOException {
         Optional<Event> existingEvent = repository.findById(eventId);
