@@ -54,5 +54,6 @@ public class LoginTest extends BaseTest {
         wait.until(ExpectedConditions.urlContains("/perfil"));
         assertTrue(driver.getCurrentUrl().contains("/perfil"));
     }
+}
 
 
