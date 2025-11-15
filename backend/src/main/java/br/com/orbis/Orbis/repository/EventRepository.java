@@ -2,13 +2,14 @@ package br.com.orbis.Orbis.repository;
 
 import br.com.orbis.Orbis.model.Event;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface EventRepository extends JpaRepository<Event, Long> {
+public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
 
     List<Event> findByOrganizerId(Long organizerId);
 

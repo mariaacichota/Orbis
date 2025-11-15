@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.io.IOException;
 import java.util.List;
 
@@ -70,6 +72,17 @@ public class EventController {
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String tag) {
         return ResponseEntity.ok(service.searchByCategoryAndTag(category, tag));
+    }
+
+    @GetMapping("/search-dynamic")
+    public ResponseEntity<List<Event>> searchEventsWithFilters(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        List<Event> events = service.searchEventsWithFilters(title, location, startDate, endDate);
+        return ResponseEntity.ok(events);
     }
 
     @PutMapping(value = "/{eventId}", consumes = {"multipart/form-data", "application/json"})
