@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: orbis-login
+  profiles:
+    active: local

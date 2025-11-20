@@ -20,17 +20,16 @@ public class Ticket {
     @JoinColumn(name = "event_id")
     private Event event;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @NotNull(message = "User is required")
-    private User user;
+    // User ID from User microservice
+    @NotNull(message = "User ID is required")
+    private Long userId;
 
     public Ticket() {}
 
-    public Ticket(TicketType type, Event event, User user) {
+    public Ticket(TicketType type, Event event, Long userId) {
         this.type = type;
         this.event = event;
-        this.user = user;
+        this.userId = userId;
     }
 
     public double getPrice() {

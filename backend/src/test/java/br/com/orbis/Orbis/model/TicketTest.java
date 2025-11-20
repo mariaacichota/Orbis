@@ -11,9 +11,9 @@ class TicketTest {
         Event event = new Event();
         event.setBaseTicketPrice(100.0);
 
-        Ticket full = new Ticket(TicketType.FULL, event, new User());
-        Ticket half = new Ticket(TicketType.HALF, event, new User());
-        Ticket vip = new Ticket(TicketType.VIP, event, new User());
+        Ticket full = new Ticket(TicketType.FULL, event, 1L);
+        Ticket half = new Ticket(TicketType.HALF, event, 2L);
+        Ticket vip = new Ticket(TicketType.VIP, event, 3L);
 
         assertEquals(100.0, full.getPrice());
         assertEquals(50.0, half.getPrice());
