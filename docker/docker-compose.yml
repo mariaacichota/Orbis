@@ -12,8 +12,13 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/orbis
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
     depends_on:
       - db
+      - rabbitmq
     networks:
       - orbis-network
 
@@ -30,8 +35,22 @@ services:
     networks:
       - orbis-network
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - orbis-network
+
 volumes:
   postgres_data:
+  rabbitmq_data:
 
 networks:
   orbis-network:

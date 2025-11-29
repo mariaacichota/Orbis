@@ -1,6 +1,7 @@
 package br.com.orbis.eventservice.service;
 
 import br.com.orbis.eventservice.dto.EventDTO;
+import br.com.orbis.eventservice.messaging.EventPublisher;
 import br.com.orbis.eventservice.model.Event;
 import br.com.orbis.eventservice.repository.EventRepository;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,13 @@ import java.util.Optional;
 public class EventService {
 
     private final EventRepository repository;
+    private final EventPublisher eventPublisher;
 
     private static final String UPLOAD_DIR = "uploads/";
 
-    public EventService(EventRepository repository) {
+    public EventService(EventRepository repository, EventPublisher eventPublisher) {
         this.repository = repository;
+        this.eventPublisher = eventPublisher;
     }
 
     public Event createEvent(EventDTO eventDto, MultipartFile image) throws IOException {
@@ -43,7 +46,9 @@ public class EventService {
         event.setOrganizerId(eventDto.getOrganizerId());
         event.setBaseTicketPrice(eventDto.getBaseTicketPrice());
 
-        return repository.save(event);
+        Event savedEvent = repository.save(event);
+        eventPublisher.publishEventCreated(savedEvent);
+        return savedEvent;
     }
 
     public List<Event> listEvents() {
@@ -97,7 +102,9 @@ public class EventService {
             eventToUpdate.setImageUrl(imagePath);
         }
 
-        return repository.save(eventToUpdate);
+        Event updatedEvent = repository.save(eventToUpdate);
+        eventPublisher.publishEventUpdated(updatedEvent);
+        return updatedEvent;
     }
 
     public void deleteEvent(Long eventId, Long organizerId) {
@@ -112,6 +119,7 @@ public class EventService {
         }
 
         repository.delete(eventToDelete);
+        eventPublisher.publishEventDeleted(eventId);
     }
 
     public boolean hasCapacity(Long eventId, int requestedTickets) {
