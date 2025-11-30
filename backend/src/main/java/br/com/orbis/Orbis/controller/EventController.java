@@ -2,10 +2,7 @@ package br.com.orbis.Orbis.controller;
 
 import br.com.orbis.Orbis.dto.EventDTO;
 import br.com.orbis.Orbis.model.Event;
-import br.com.orbis.Orbis.model.Role;
-import br.com.orbis.Orbis.model.User;
 import br.com.orbis.Orbis.service.EventService;
-import br.com.orbis.Orbis.service.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,15 +19,12 @@ import java.util.List;
 @RequestMapping("/events")
 public class EventController {
 
-    private static final String USER_NOT_FOUND_MESSAGE = "User not found";
     private static final Logger log = LoggerFactory.getLogger(EventController.class);
 
     private final EventService service;
-    private final UserService userService;
 
-    public EventController(EventService service, UserService userService) {
+    public EventController(EventService service) {
         this.service = service;
-        this.userService = userService;
     }
 
     @PostMapping(consumes = {"multipart/form-data", "application/json"})
@@ -42,10 +36,11 @@ public class EventController {
         log.info("[POST] /events - Criando evento");
         try {
             EventDTO eventToCreate = event != null ? event : eventBody;
-            User user = userService.getUserById(eventToCreate.getOrganizerId())
-                    .orElseThrow(() -> new IllegalArgumentException(USER_NOT_FOUND_MESSAGE));
-            log.info("Organizador encontrado: {}", user.getEmail());
-            Event createdEvent = service.createEvent(eventToCreate, image, user);
+            if (eventToCreate.getOrganizerId() == null) {
+                return ResponseEntity.badRequest().body(null);
+            }
+            log.info("Criando evento com organizador ID: {}", eventToCreate.getOrganizerId());
+            Event createdEvent = service.createEvent(eventToCreate, image);
             log.info("Evento criado com sucesso: {}", createdEvent.getId());
             return ResponseEntity.ok(createdEvent);
         } catch (IOException e) {
@@ -94,12 +89,11 @@ public class EventController {
 
         try {
             EventDTO eventToUpdate = event != null ? event : eventBody;
+            if (eventToUpdate.getOrganizerId() == null) {
+                return ResponseEntity.badRequest().body(null);
+            }
 
-            // Verifica se o organizerId está no corpo da requisição
-            User user = userService.getUserById(eventToUpdate.getOrganizerId())
-                    .orElseThrow(() -> new IllegalArgumentException(USER_NOT_FOUND_MESSAGE));
-
-            Event updatedEvent = service.updateEvent(eventId, eventToUpdate, image, user.getId());
+            Event updatedEvent = service.updateEvent(eventId, eventToUpdate, image);
             return ResponseEntity.ok(updatedEvent);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -114,15 +108,11 @@ public class EventController {
             @RequestBody(required = false) EventDTO eventBody) {
 
         try {
-            // Verifica se o organizerId está no corpo da requisição
             if (eventBody == null || eventBody.getOrganizerId() == null) {
                 return ResponseEntity.badRequest().build();
             }
 
-            User user = userService.getUserById(eventBody.getOrganizerId())
-                    .orElseThrow(() -> new IllegalArgumentException(USER_NOT_FOUND_MESSAGE));
-
-            service.deleteEvent(eventId, user.getId());
+            service.deleteEvent(eventId, eventBody.getOrganizerId());
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
@@ -134,26 +124,5 @@ public class EventController {
         return service.getEventById(eventId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping("/{eventId}/participants")
-    public ResponseEntity<String> addParticipant(@PathVariable Long eventId, @RequestBody User user) {
-        try {
-
-            // Verifica se o evento existe
-            Event event = service.getEventById(eventId).orElseThrow(() -> new IllegalArgumentException("Event not found"));
-
-            // Verifica se o evento atingiu o limite de participantes
-            if (event.getParticipants().size() >= event.getMaxTickets()) {
-                return ResponseEntity.status(400).body("Event has reached the maximum number of participants.");
-            }
-
-            // Adiciona o participante ao evento
-            service.addParticipant(eventId, user.getId());
-
-            return ResponseEntity.ok("User added as a participant.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
     }
 }

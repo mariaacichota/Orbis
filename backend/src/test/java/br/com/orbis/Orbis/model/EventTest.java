@@ -7,8 +7,7 @@ import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class EventTest{
-
+class EventTest {
 
     @Test
     void eventWithoutTitleShouldFail() {
@@ -30,7 +29,7 @@ class EventTest{
         event.setTime(null);
         event.setLocation("");
         event.setMaxTickets(null);
-        event.setOrganizer(null);
+        event.setOrganizerId(null);
 
         assertTrue(event.getTitle().isEmpty());
         assertTrue(event.getDescription().isEmpty());
@@ -38,8 +37,9 @@ class EventTest{
         assertNull(event.getTime());
         assertTrue(event.getLocation().isEmpty());
         assertNull(event.getMaxTickets());
-        assertNull(event.getOrganizer());
+        assertNull(event.getOrganizerId());
     }
+
     @Test
     void maxTicketsGreaterThanZero() {
         Event event = new Event();
@@ -56,12 +56,10 @@ class EventTest{
         event.setTime(LocalTime.of(13, 30));
         event.setLocation("Copacabana");
         event.setMaxTickets(100);
+        event.setOrganizerId(1L);
 
-        User organizer = new User();
-        organizer.setId(1L);
-        event.setOrganizer(organizer);  // Define o organizador
-        assertNotNull(event.getOrganizer());
-        assertEquals(1L, event.getOrganizer().getId());
+        assertNotNull(event.getOrganizerId());
+        assertEquals(1L, event.getOrganizerId());
 
         assertNotNull(event.getTitle());
         assertNotNull(event.getDescription());
@@ -70,6 +68,7 @@ class EventTest{
         assertNotNull(event.getLocation());
         assertNotNull(event.getMaxTickets());
     }
+
     @Test
     void eventSettersAndGettersShouldWork() {
         Event event = new Event();
@@ -80,10 +79,7 @@ class EventTest{
         event.setTime(LocalTime.of(10, 30));
         event.setLocation("copacabana");
         event.setMaxTickets(500);
-
-        User organizer = new User();
-        organizer.setId(2L);
-        event.setOrganizer(organizer);
+        event.setOrganizerId(2L);
 
         assertEquals(1L, event.getId());
         assertEquals("Tech Conference", event.getTitle());
@@ -92,7 +88,6 @@ class EventTest{
         assertEquals(LocalTime.of(10, 30), event.getTime());
         assertEquals("copacabana", event.getLocation());
         assertEquals(500, event.getMaxTickets());
-        assertEquals(2L, event.getOrganizer().getId());
+        assertEquals(2L, event.getOrganizerId());
     }
-
 }

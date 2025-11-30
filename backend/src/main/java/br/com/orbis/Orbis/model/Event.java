@@ -1,6 +1,5 @@
 package br.com.orbis.Orbis.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -45,19 +44,8 @@ public class Event {
     @Positive(message = "Max tickets must be greater than zero")
     private Integer maxTickets;
 
-
-    @ManyToOne
-    @JoinColumn(name = "organizer_id", nullable = false)
-    @JsonBackReference
-    private User organizer;
-
-    @ManyToMany
-    @JoinTable(
-            name = "event_participants",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> participants = new ArrayList<>();
+    @NotNull(message = "Organizer ID is required")
+    private Long organizerId;
 
     @NotNull(message = "Base price is required")
     @Positive(message = "Base price must be greater than zero")
