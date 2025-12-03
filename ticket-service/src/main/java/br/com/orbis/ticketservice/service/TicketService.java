@@ -1,49 +1,90 @@
-package br.com.orbis.ticketservice.service;
+package br.com.orbis.ticketservice.service.impl;
 
-import br.com.orbis.ticketservice.client.EventClient;
+import br.com.orbis.ticketservice.dto.TicketRequest;
+import br.com.orbis.ticketservice.dto.TicketResponse;
+import br.com.orbis.ticketservice.model.EventInfo;
 import br.com.orbis.ticketservice.model.Ticket;
-import br.com.orbis.ticketservice.model.TicketType;
+import br.com.orbis.ticketservice.repository.EventInfoRepository;
 import br.com.orbis.ticketservice.repository.TicketRepository;
+import br.com.orbis.ticketservice.service.TicketService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
-public class TicketService {
+@RequiredArgsConstructor
+public class TicketServiceImpl implements TicketService {
 
     private final TicketRepository ticketRepository;
-    private final EventClient eventClient;
+    private final EventInfoRepository eventInfoRepository;
 
-    public TicketService(TicketRepository ticketRepository, EventClient eventClient) {
-        this.ticketRepository = ticketRepository;
-        this.eventClient = eventClient;
-    }
+    @Override
+    public TicketResponse sellTicket(TicketRequest request) {
 
-    public Ticket createTicket(TicketRequest request) {
+        EventInfo eventInfo = eventInfoRepository.findById(request.getEventId())
+                .orElseThrow(() -> new IllegalStateException("Evento não encontrado para o ID: " + request.getEventId()));
+
+        double basePrice = eventInfo.getBaseTicketPrice();
+        if (request.getBasePrice() != null && !request.getBasePrice().equals(basePrice)) {
+            // add. exceção
+        }
 
         Ticket ticket = new Ticket(
                 request.getType(),
                 request.getEventId(),
                 request.getUserId(),
-                request.getBasePrice()
+                basePrice
         );
 
-        return ticketRepository.save(ticket);
+        Ticket saved = ticketRepository.save(ticket);
+
+        return TicketResponse.builder()
+                .id(saved.getId())
+                .type(saved.getType())
+                .eventId(saved.getEventId())
+                .userId(saved.getUserId())
+                .basePrice(saved.getBasePrice())
+                .finalPrice(saved.getPrice())
+                .build();
     }
-    
-    public boolean processTicketSale(Long eventId, Long userId, TicketType type) {
-        EventClient.EventResponse event = eventClient.getEventById(eventId);
 
-        if (event == null) {
-            throw new IllegalStateException("Evento não encontrado");
-        }
+    @Override
+    public TicketResponse getTicket(Long id) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Ticket não encontrado: " + id));
 
-        long sold = ticketRepository.countByEventId(eventId);
-        if (sold >= event.getMaxTickets()) {
-            throw new IllegalStateException("Não há mais tickets disponíveis para o evento.");
-        }
+        return TicketResponse.builder()
+                .id(ticket.getId())
+                .type(ticket.getType())
+                .eventId(ticket.getEventId())
+                .userId(ticket.getUserId())
+                .basePrice(ticket.getBasePrice())
+                .finalPrice(ticket.getPrice())
+                .build();
+    }
 
-        Ticket ticket = new Ticket(type, eventId, userId, event.getBaseTicketPrice());
-        ticketRepository.save(ticket);
-        return true;
+    @Override
+    public List<TicketResponse> getTicketsByUser(Long userId) {
+        return ticketRepository.findByUserId(userId).stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<TicketResponse> getTicketsByEvent(Long eventId) {
+        return ticketRepository.findByEventId(eventId).stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    private TicketResponse toResponse(Ticket t) {
+        return TicketResponse.builder()
+                .id(t.getId())
+                .type(t.getType())
+                .eventId(t.getEventId())
+                .userId(t.getUserId())
+                .basePrice(t.getBasePrice())
+                .finalPrice(t.getPrice())
+                .build();
     }
 }
-
