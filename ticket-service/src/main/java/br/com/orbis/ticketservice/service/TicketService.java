@@ -17,6 +17,18 @@ public class TicketService {
         this.eventClient = eventClient;
     }
 
+    public Ticket createTicket(TicketRequest request) {
+
+        Ticket ticket = new Ticket(
+                request.getType(),
+                request.getEventId(),
+                request.getUserId(),
+                request.getBasePrice()
+        );
+
+        return ticketRepository.save(ticket);
+    }
+    
     public boolean processTicketSale(Long eventId, Long userId, TicketType type) {
         EventClient.EventResponse event = eventClient.getEventById(eventId);
 

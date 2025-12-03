@@ -12,11 +12,16 @@ import org.slf4j.LoggerFactory;
 public class TicketController {
 
     private static final Logger log = LoggerFactory.getLogger(TicketController.class);
-
     private final TicketService ticketService;
 
     public TicketController(TicketService ticketService) {
         this.ticketService = ticketService;
+    }
+
+    @PostMapping
+    public ResponseEntity<Ticket> createTicket(@RequestBody @Valid TicketRequest request) {
+        Ticket created = ticketService.createTicket(request);
+        return ResponseEntity.ok(created);
     }
 
     @PostMapping
