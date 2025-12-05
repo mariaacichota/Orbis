@@ -12,6 +12,8 @@ Orbis é uma plataforma moderna de **gestão de eventos**, desenvolvida com **Sp
 - Organização de eventos por **categorias**, **tags**, **palestrantes** e **atividades**
 - Controle de permissões por **roles de usuário**
 - API REST com tratamento de exceções e validações personalizadas
+- Arquitetura orientada a **microserviços** (em desenvolvimento)
+- Integração assíncrona com **RabbitMQ**
 
 ---
 
@@ -21,12 +23,13 @@ Orbis é uma plataforma moderna de **gestão de eventos**, desenvolvida com **Sp
 
 - **Spring Boot**
 - **Spring Security** com **JWT**
+- **Spring Web + Spring Validation**
 - **Spring Data JPA**
-- **Hibernate Validator**
-- **Maven**
-- **H2** para ambiente de testes
-- **PostgreSQL** para ambiente de produção
-- **Lombok**
+- **H2** para ambiente de dev
+- **PostgreSQL** no `backend` monolito para ambiente de prod (autenticação, eventos, usuários)
+- **MongoDB** para o microsserviço ticket-service
+- **RabbitMQ** (comunicação entre serviços)
+- **Maven** + **Lombok**
 
 ### Frontend (React)
 
@@ -46,12 +49,14 @@ Orbis é uma plataforma moderna de **gestão de eventos**, desenvolvida com **Sp
 
 ```bash
 Orbis/
-├── backend/        # Spring Boot API
-├── frontend/       # React.js SPA
-├── docker/         # Dockerfile + docker-compose
-├── k8s/            # Arquivos de manifesto Kubernetes
-├── sql/            # Scripts SQL de criação de tabelas
-├── documentation/  # Diagramas e notebooks técnicos
+├── backend/             # Monolito com autenticação, usuários, eventos
+├── ticket-service/      # Microsserviço para ingressos (MongoDB)
+├── event-service/       # Microsserviço para eventos
+├── frontend/            # SPA em React
+├── docker/              # Dockerfiles e docker-compose
+├── k8s/                 # Arquivos de manifesto do Kubernetes (yaml)
+├── sql/                 # Scripts SQL auxiliares (PostgreSQL)
+├── documentation/       # Diagramas e documentação técnica
 ```
 
 ---
@@ -70,7 +75,7 @@ Orbis/
 
 - `User`: dados de login e permissões
 - `Event`: contém título, descrição, data, local
-- `Ticket`: vinculado a um `User` e `Event`
+- `Ticket`: vinculado a um `User` e `Event` (armazenado no MongoDB)
 - `Speaker`, `Activity`: usados na programação do evento
 - `Category`, `Tag`, `TicketType`: organizadores e variantes do evento
 
@@ -104,6 +109,7 @@ docker-compose up --build
 
 - Backend será executado em `http://localhost:8080`
 - Banco PostgreSQL será inicializado via container
+- Banco MongoDB inicializado via container
 
 ---
 
