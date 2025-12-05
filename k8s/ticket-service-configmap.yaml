@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ticket-config
+data:
+  spring.data.mongodb.uri: mongodb://mongo:27017/ticketdb
+  server.port: "8082"
