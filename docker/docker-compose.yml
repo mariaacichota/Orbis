@@ -48,9 +48,32 @@ services:
     networks:
       - orbis-network
 
+  mongo:
+    image: mongo:7
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - orbis-network
+
+  ticket-service:
+    build:
+      context: ../ticket-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mongo
+    networks:
+      - orbis-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
 volumes:
   postgres_data:
   rabbitmq_data:
+  mongo_data:
 
 networks:
   orbis-network:

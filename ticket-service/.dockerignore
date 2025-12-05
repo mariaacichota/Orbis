@@ -1,0 +1,21 @@
+# Build output
+target/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# Sistema
+.DS_Store
+*.log
+
+# Git
+.git
+.gitignore
+
+# Outros
+.env
+*.swp
+*.bak
+*.tmp

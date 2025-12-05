@@ -16,6 +16,9 @@ Microserviço responsável pelo gerenciamento de ingressos.
 ## Dependências
 - Comunica-se com o **Event Service** na porta 8081
 
+## Persistência
+- MongoDB
+
 ## Executar
 ```bash
 ./mvnw spring-boot:run

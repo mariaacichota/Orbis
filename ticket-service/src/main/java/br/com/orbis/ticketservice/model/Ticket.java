@@ -1,16 +1,16 @@
 package br.com.orbis.ticketservice.model;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-@Entity
+@Document(collection = "tickets")
 @Data
 public class Ticket {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Ticket type is required")
