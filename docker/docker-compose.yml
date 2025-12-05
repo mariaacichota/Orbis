@@ -60,7 +60,8 @@ services:
 
   ticket-service:
     build:
-      context: ../ticket-service
+      context: .
+      dockerfile: ../docker/ticket-service.Dockerfile
     ports:
       - "8082:8082"
     depends_on:
