@@ -5,18 +5,15 @@ spring:
   application:
     name: orbis-login
 
-  profiles:
-    active: local
-
   cloud:
     consul:
       host: localhost
       port: 8500
       discovery:
-        fail-fast: false
         register: true
         enabled: true
         prefer-ip-address: true
+        fail-fast: false
         health-check-path: /actuator/health
         health-check-interval: 10s
 
