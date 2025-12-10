@@ -4,7 +4,15 @@ server:
 spring:
   application:
     name: orbis-gateway
+
   cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        enabled: true
+        register: true
+
     gateway:
       routes:
         - id: event-service
@@ -16,3 +24,7 @@ spring:
           uri: http://localhost:8082
           predicates:
             - Path=/tickets/**
+
+      discovery:
+        locator:
+          enabled: true
