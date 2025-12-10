@@ -2,6 +2,8 @@ package br.com.orbis.ticketservice.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -37,4 +39,3 @@ public class Ticket {
         return type.calculatePrice(basePrice);
     }
 }
-
