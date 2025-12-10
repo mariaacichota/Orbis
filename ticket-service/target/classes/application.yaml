@@ -1,0 +1,25 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: ticket-service
+
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        register: true
+        enabled: true
+        prefer-ip-address: true
+        fail-fast: false
+
+logging:
+  level:
+    org.springframework: DEBUG
+    org.springframework.web: DEBUG
+
+event:
+  service:
+    url: http://event-service
