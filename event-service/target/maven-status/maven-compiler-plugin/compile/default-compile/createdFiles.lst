@@ -1,0 +1,17 @@
+br\com\orbis\eventservice\service\EventService.class
+br\com\orbis\eventservice\config\RabbitMQConfig.class
+br\com\orbis\eventservice\model\Activity.class
+br\com\orbis\eventservice\repository\CategoryRepository.class
+br\com\orbis\eventservice\repository\EventRepository.class
+br\com\orbis\eventservice\model\Event.class
+br\com\orbis\eventservice\model\Speaker.class
+br\com\orbis\eventservice\repository\TagRepository.class
+br\com\orbis\eventservice\model\Tag.class
+br\com\orbis\eventservice\service\EventSpecifications.class
+br\com\orbis\eventservice\dto\EventDTO.class
+br\com\orbis\eventservice\messaging\EventMessage.class
+br\com\orbis\eventservice\EventServiceApplication.class
+br\com\orbis\eventservice\messaging\EventDeletedMessage.class
+br\com\orbis\eventservice\controller\EventController.class
+br\com\orbis\eventservice\messaging\EventPublisher.class
+br\com\orbis\eventservice\model\Category.class
