@@ -2,8 +2,6 @@ package br.com.orbis.ticketservice.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -14,7 +12,6 @@ public class Ticket {
     @Id
     private String id;
 
-    @Enumerated(EnumType.STRING)
     @NotNull(message = "Ticket type is required")
     private TicketType type;
 
