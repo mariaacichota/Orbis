@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 @Repository
-public interface TicketRepository extends MongoRepository<Ticket, Long> {
+public interface TicketRepository extends MongoRepository<Ticket, String> {
+
     long countByEventId(Long eventId);
 }
-
