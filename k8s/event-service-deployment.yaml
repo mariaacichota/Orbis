@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: event-service
+  template:
+    metadata:
+      labels:
+        app: event-service
+    spec:
+      containers:
+        - name: event-service
+          image: event-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8081
+          # Adicione aqui as variáveis de ambiente (DB, RabbitMQ) se precisar
+          # env:
+          #   - name: SPRING_DATASOURCE_URL ...
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: event-service
+spec:
+  selector:
+    app: event-service
+  ports:
+    - port: 8081
+      targetPort: 8081
+  type: NodePort

@@ -95,6 +95,11 @@
 			<version>42.7.3</version>
 		</dependency>
 
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-tracing-bridge-brave</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>

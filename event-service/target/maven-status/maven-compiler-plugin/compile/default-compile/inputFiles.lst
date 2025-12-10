@@ -1,17 +1,17 @@
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\config\RabbitMQConfig.java
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\controller\EventController.java
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\dto\EventDTO.java
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\EventServiceApplication.java
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\messaging\EventDeletedMessage.java
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\messaging\EventMessage.java
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\messaging\EventPublisher.java
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\model\Activity.java
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\model\Category.java
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\model\Event.java
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\model\Speaker.java
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\model\Tag.java
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\repository\CategoryRepository.java
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\repository\EventRepository.java
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\repository\TagRepository.java
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\service\EventService.java
-C:\Users\raque\OneDrive\Documentos\Orbis\event-service\src\main\java\br\com\orbis\eventservice\service\EventSpecifications.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\config\RabbitMQConfig.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\controller\EventController.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\dto\EventDTO.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\EventServiceApplication.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\messaging\EventDeletedMessage.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\messaging\EventMessage.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\messaging\EventPublisher.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\model\Activity.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\model\Category.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\model\Event.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\model\Speaker.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\model\Tag.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\repository\CategoryRepository.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\repository\EventRepository.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\repository\TagRepository.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\service\EventService.java
+C:\Users\Luisa\Desktop\Faculdade\2025\Projeto de Bloco 2025\Orbis-main\Orbis\event-service\src\main\java\br\com\orbis\eventservice\service\EventSpecifications.java

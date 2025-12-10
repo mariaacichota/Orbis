@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orbis-login
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orbis-login
+  template:
+    metadata:
+      labels:
+        app: orbis-login
+    spec:
+      containers:
+        - name: orbis-login
+          image: orbis-login:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080 # Confirme a porta no application.properties do login
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orbis-login
+spec:
+  selector:
+    app: orbis-login
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: NodePort

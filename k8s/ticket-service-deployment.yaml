@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ticket-service
+  labels:
+    app: ticket-service
 spec:
   replicas: 1
   selector:
