@@ -40,8 +40,17 @@ spring:
         enabled: true
         prefer-ip-address: true
         fail-fast: false
+        health-check-path: /actuator/health
+        health-check-interval: 10s
 
-logging:
-  level:
-    org.springframework: DEBUG
-    org.springframework.web: DEBUG
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+  health:
+    rabbit:
+      enabled: false
