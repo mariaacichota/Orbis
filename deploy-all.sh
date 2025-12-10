@@ -10,11 +10,13 @@ minikube start
 docker build -f docker/backend.Dockerfile -t orbis-backend:latest .
 docker build -f docker/frontend.Dockerfile -t orbis-frontend:latest .
 docker build -f docker/sql.Dockerfile -t orbis-postgres:latest .
+docker build -f docker/ticket-service.Dockerfile -t ticket-service:latest .
 
 echo "Carregando imagens no Minikube..."
 minikube image load orbis-backend:latest
 minikube image load orbis-frontend:latest
 minikube image load orbis-postgres:latest
+minikube image load ticket-service:latest
 
 echo "☸Aplicando arquivos do Kubernetes..."
 kubectl apply -f k8s/postgres-configmap.yaml
@@ -25,7 +27,11 @@ kubectl apply -f k8s/backend-deployment.yaml
 kubectl apply -f k8s/backend-service.yaml
 kubectl apply -f k8s/frontend-deployment.yaml
 kubectl apply -f k8s/frontend-service.yaml
-
+kubectl apply -f k8s/mongo-deployment.yaml
+kubectl apply -f k8s/mongo-service.yaml
+kubectl apply -f k8s/ticket-service-configmap.yaml
+kubectl apply -f k8s/ticket-service-deployment.yaml
+kubectl apply -f k8s/ticket-service-service.yaml
 
 echo "Aguardando frontend subir..."
 kubectl wait --for=condition=available deployment/orbis-frontend --timeout=90s
