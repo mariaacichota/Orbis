@@ -7,12 +7,12 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://localhost:27017/ticketdb
+      uri: mongodb://mongo:27017/ticketdb
       auto-index-creation: true
 
   cloud:
     consul:
-      host: localhost
+      host: consul
       port: 8500
       discovery:
         register: true

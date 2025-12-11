@@ -1,0 +1,7 @@
+br/com/orbis/ticketservice/model/TicketType.class
+br/com/orbis/ticketservice/model/TicketType$2.class
+br/com/orbis/ticketservice/repository/TicketRepository.class
+br/com/orbis/ticketservice/model/TicketType$1.class
+br/com/orbis/ticketservice/model/TicketType$3.class
+br/com/orbis/ticketservice/model/Ticket.class
+br/com/orbis/ticketservice/TicketServiceApplication.class
