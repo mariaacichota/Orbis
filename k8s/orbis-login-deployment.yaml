@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orbis-login
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orbis-login
+  template:
+    metadata:
+      labels:
+        app: orbis-login
+    spec:
+      containers:
+        - name: orbis-login
+          image: orbis-login:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8085
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres:5432/orbis
+            - name: SERVER_PORT
+              value: "8085"
