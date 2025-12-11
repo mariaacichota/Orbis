@@ -1,0 +1,38 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: ticket-service
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/ticketdb
+      auto-index-creation: true
+
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        register: true
+        enabled: true
+        prefer-ip-address: true
+        fail-fast: false
+        health-check-path: /actuator/health
+        health-check-interval: 10s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org.springframework: DEBUG
+    org.springframework.web: DEBUG

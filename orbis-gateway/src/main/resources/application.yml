@@ -12,19 +12,20 @@ spring:
       discovery:
         enabled: true
         register: true
+        prefer-ip-address: true
+        health-check-path: /actuator/health
+        health-check-interval: 10s
 
     gateway:
-      routes:
-        - id: event-service
-          uri: http://localhost:8081
-          predicates:
-            - Path=/events/**
-
-        - id: ticket-service
-          uri: http://localhost:8082
-          predicates:
-            - Path=/tickets/**
-
       discovery:
         locator:
           enabled: true
+      routes:
+        - id: event-service
+          uri: lb://event-service
+          predicates:
+            - Path=/events/**
+        - id: ticket-service
+          uri: lb://ticket-service
+          predicates:
+            - Path=/tickets/**
