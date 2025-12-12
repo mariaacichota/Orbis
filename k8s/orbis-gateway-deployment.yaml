@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orbis-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orbis-gateway
+  template:
+    metadata:
+      labels:
+        app: orbis-gateway
+    spec:
+      containers:
+        - name: orbis-gateway
+          image: orbis-gateway:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+            - name: TICKET_SERVICE_URL
+              value: http://ticket-service:8082
+            - name: EVENT_SERVICE_URL
+              value: http://event-service:8081
+            - name: LOGIN_SERVICE_URL
+              value: http://orbis-login:8085

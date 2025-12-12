@@ -1,81 +1,77 @@
 version: '3.8'
 
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: docker/backend.Dockerfile
-    ports:
-      - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/orbis
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
-      - SPRING_RABBITMQ_HOST=rabbitmq
-      - SPRING_RABBITMQ_PORT=5672
-      - SPRING_RABBITMQ_USERNAME=guest
-      - SPRING_RABBITMQ_PASSWORD=guest
-    depends_on:
-      - db
-      - rabbitmq
-    networks:
-      - orbis-network
 
-  db:
-    image: postgres:15
+  consul:
+    image: consul:1.15.4
     ports:
-      - "5432:5432"
+      - "8500:8500"
+
+  mongo:
+    image: mongo:7
+    container_name: mongo
+    ports:
+      - "27017:27017"
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
     environment:
       - POSTGRES_DB=orbis
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - orbis-network
+    ports:
+      - "5432:5432"
 
   rabbitmq:
     image: rabbitmq:3-management
+    container_name: rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    networks:
-      - orbis-network
-
-  mongo:
-    image: mongo:7
-    container_name: mongodb
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-    networks:
-      - orbis-network
 
   ticket-service:
     build:
-      context: .
-      dockerfile: ../docker/ticket-service.Dockerfile
+      context: ../ticket-service
+      dockerfile: Dockerfile
+    container_name: ticket-service
     ports:
       - "8082:8082"
     depends_on:
       - mongo
-    networks:
-      - orbis-network
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
+      - consul
 
-volumes:
-  postgres_data:
-  rabbitmq_data:
-  mongo_data:
+  event-service:
+    build:
+      context: ../event-service
+      dockerfile: Dockerfile
+    container_name: event-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - rabbitmq
+      - consul
 
-networks:
-  orbis-network:
-    driver: bridge
+  orbis-login:
+    build:
+      context: ../orbis-login
+      dockerfile: Dockerfile
+    container_name: orbis-login
+    ports:
+      - "8085:8085"
+    depends_on:
+      - postgres
+      - consul
+
+  orbis-gateway:
+    build:
+      context: ../orbis-gateway
+      dockerfile: Dockerfile
+    container_name: orbis-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ticket-service
+      - event-service
+      - orbis-login
+      - consul

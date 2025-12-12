@@ -5,13 +5,26 @@ spring:
   application:
     name: orbis-login
 
+  datasource:
+    url: jdbc:postgresql://postgres:5432/orbis
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
   cloud:
     consul:
-      host: localhost
+      host: consul
       port: 8500
       discovery:
-        register: true
         enabled: true
+        register: true
         prefer-ip-address: true
         fail-fast: false
         health-check-path: /actuator/health
@@ -22,3 +35,7 @@ management:
     web:
       exposure:
         include: "*"
+
+  endpoint:
+    health:
+      show-details: always

@@ -8,5 +8,5 @@ spec:
   ports:
     - port: 8082
       targetPort: 8082
-      nodePort: 30082  # Acesse com: minikube service ticket-service
+      nodePort: 30082
   type: NodePort
