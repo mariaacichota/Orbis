@@ -1,5 +1,10 @@
 # Orbis - Sistema de Gestão de Eventos
 
+## Vídeo da Apresentação (duração: 10min)
+https://youtu.be/6PNg_nxV24A
+
+---
+
 Orbis é uma plataforma moderna de **gestão de eventos**, desenvolvida com **Spring Boot no backend** e **React no frontend**. Seu objetivo é facilitar o planejamento, organização, publicação e gerenciamento de eventos como conferências, workshops, palestras e shows.
 
 ---
