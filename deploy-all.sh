@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "🔧 Iniciando Minikube..."
-minikube start
+minikube start --driver=docker
 
 echo "⬇️ Baixando imagens necessárias..."
 docker pull consul:1.15.4
@@ -41,7 +41,7 @@ minikube image load orbis-login:latest
 minikube image load orbis-gateway:latest
 minikube image load orbis-postgres:latest
 minikube image load mongo:latest
-minikube image load consul:1.15.5
+minikube image load consul:1.15.4
 
 echo "Aplicando YAMLs no Kubernetes..."
 
